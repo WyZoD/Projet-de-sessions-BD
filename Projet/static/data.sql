@@ -317,5 +317,7 @@ INSERT INTO ProductReviews (ProductID, Username, Note, Commentaire, Date) VALUES
 (10, "marieismygirl", 2, 'Le short est bien mais les coutures sont fragiles.', NOW()),
 (12, "marieismygirl", 3, 'Écharpe jolie mais plus fine que je ne le pensais.', NOW());
 
+SELECT * FROM Users
+
 
 

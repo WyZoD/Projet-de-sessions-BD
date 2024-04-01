@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="eng">
 <head>
     <meta charset="UTF-8">
     <title>Projet de session BD H24</title>
@@ -8,8 +8,13 @@
 </head>
 <body>
     <div class="button-group">
+        {%  if logged_in %}
+        <span>Welcome, {{ username }}</span>
+        <a href="/logout/" class="button">Logout</a>
+        {% else %}
         <a href="/signup/" class="button">Sign Up</a>
         <a href="/login/" class="button">Login</a>
+        {% endif %}
     </div>
 </body>
 </html>

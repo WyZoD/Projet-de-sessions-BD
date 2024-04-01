@@ -1,6 +1,7 @@
 import pymysql
 from flask.cli import load_dotenv
 import os
+import pymysql.cursors
 
 from werkzeug.security import generate_password_hash
 
@@ -33,4 +34,14 @@ def add_user(username, password, email, name, address):
                 connection.rollback()
                 return False
 
+
+def get_user_by_email(email):
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+                cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+                return cursor.fetchone()
+    except Exception as e:
+        print(e)
+        return None
 

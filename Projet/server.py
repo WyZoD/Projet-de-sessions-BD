@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
+from flask import Flask, render_template, request, jsonify, flash, redirect, url_for, session
+from werkzeug.security import check_password_hash
 
 from database import *
 
@@ -8,7 +9,13 @@ app.secret_key = 'dsadsadasdasdasdasdas'
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    if 'username' in session:
+        logged_in = True
+        username = session['username']
+    else:
+        logged_in = False
+        username = None
+    return render_template('index.html', logged_in=logged_in, username=username)
 
 
 @app.route("/signup/")
@@ -35,9 +42,20 @@ def add_signup():
 @app.route("/login/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        pass
-    return render_template("login.html")
+        print(request.form["password"])
+        email = request.form["email"]
+        password = request.form["password"]
 
+        user = get_user_by_email(email)
+
+        if user and check_password_hash(user['Password'], password):
+            flash("Logged in successfully!")
+            session['username'] = user['Username']
+            return redirect(url_for('index'))
+        else:
+            flash("Invalid email or password")
+            return redirect(url_for('login'))
+    return render_template("login.html")
 
 
 if __name__ == '__main__':

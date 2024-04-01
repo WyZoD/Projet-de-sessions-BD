@@ -1,43 +1,43 @@
 DROP TABLE IF EXISTS ProductReviews;
 DROP TABLE IF EXISTS OrderItems;
-DROP TABLE IF EXISTS Commandes;
-DROP TABLE IF EXISTS Produits;
+DROP TABLE IF EXISTS Commands;
+DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS Categories;
-DROP TABLE IF EXISTS Utilisateurs;
+DROP TABLE IF EXISTS Users;
 
-CREATE TABLE Utilisateurs (
-    UserID INT AUTO_INCREMENT PRIMARY KEY,
-    Nom VARCHAR(40),
+CREATE TABLE Users (
+    Username varchar(40) PRIMARY KEY,
+    Name VARCHAR(40),
     Email VARCHAR(40) UNIQUE,
-    MotDePasse VARCHAR(400),
-    Adresse VARCHAR(255),
-    DateInscription DATETIME
+    Password VARCHAR(400),
+    Address VARCHAR(255),
+    InscriptionDate DATETIME
 );
 
 CREATE TABLE Categories (
     CategorieID INT AUTO_INCREMENT PRIMARY KEY,
-    Nom VARCHAR(100),
+    Name VARCHAR(100),
     Description VARCHAR(500)
 );
 
-CREATE TABLE Produits (
+CREATE TABLE Products (
     ProductID INT AUTO_INCREMENT PRIMARY KEY,
-    Nom VARCHAR(100),
+    Name VARCHAR(100),
     Description VARCHAR(1000),
-    Prix DECIMAL(10, 2),
+    Price DECIMAL(10, 2),
     Stock INT,
     CategorieID INT,
     FOREIGN KEY (CategorieID) REFERENCES Categories(CategorieID)
 );
 
-CREATE TABLE Commandes (
+CREATE TABLE Commands (
     OrderID INT AUTO_INCREMENT PRIMARY KEY,
-    UserID INT,
-    DateCommande DATETIME,
-    Statut VARCHAR(40),
-    AdresseLivraison VARCHAR(255),
+    Username VARCHAR(40),
+    DateCommand DATETIME,
+    Status VARCHAR(40),
+    DeliveryAddress VARCHAR(255),
     Total DECIMAL(10, 2),
-    FOREIGN KEY (UserID) REFERENCES Utilisateurs(UserID)
+    FOREIGN KEY (Username) REFERENCES Users (Username)
 );
 
 CREATE TABLE OrderItems (
@@ -46,142 +46,142 @@ CREATE TABLE OrderItems (
     ProductID INT,
     Quantite INT,
     PrixUnitaire DECIMAL(10, 2),
-    FOREIGN KEY (OrderID) REFERENCES Commandes(OrderID),
-    FOREIGN KEY (ProductID) REFERENCES Produits(ProductID)
+    FOREIGN KEY (OrderID) REFERENCES Commands(OrderID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
 );
 
 CREATE TABLE ProductReviews (
     ReviewID INT AUTO_INCREMENT PRIMARY KEY,
     ProductID INT,
-    UserID INT,
+    Username VARCHAR(40),
     Note INT,
     Commentaire TEXT,
     Date DATETIME,
-    FOREIGN KEY (ProductID) REFERENCES Produits(ProductID),
-    FOREIGN KEY (UserID) REFERENCES Utilisateurs(UserID)
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+    FOREIGN KEY (Username) REFERENCES Users(Username)
 );
 
-INSERT INTO Utilisateurs (Nom, Email, MotDePasse, Adresse, DateInscription) VALUES
-('Alexandre Dubois', 'alexandre.dubois@example.com', 'dsadsadsa', '1234 Rue de la République, Paris', '2023-01-01'),
-('Marie Joly', 'marie.joly@example.com', 'dsadsadsa', '5678 Avenue de la Liberté, Marseille', '2023-01-02'),
-('Lucas Martin', 'lucas.martin@example.com', 'dsadsa', '91011 Boulevard de lÉgalité, Lyon', '2023-01-03'),
-('Chloé Bernard', 'chloe.bernard@example.com', 'dsadasdsa', '1213 Rue de la Fraternité, Toulouse', '2023-01-04'),
-('Maxime Petit', 'maxime.petit@example.com', 'fdsfdsfds', '1415 Avenue de la Paix, Nice', '2023-01-05'),
-('Sophie Mercier', 'sophie.mercier@example.com', 'hgfd', '1617 Boulevard de lAmour, Nantes', '2023-01-06'),
-('Gabriel Rousseau', 'gabriel.rousseau@example.com', 'hashgfded_pasgfdsword', '1819 Rue du Progrès, Strasbourg', '2023-01-07'),
-('Emma Moreau', 'emma.moreau@example.com', 'hgfdword', '2021 Avenue de la Victoire, Bordeaux', '2023-01-08'),
-('Hugo Dupont', 'hugo.dupont@example.com', 'hasheddasrd', '2223 Boulevard de la Révolution, Lille', '2023-01-09'),
-('Inès Lefebvre', 'ines.lefebvre@example.com', 'hasgfdrd', '2425 Rue de la Libération, Rennes', '2023-01-10'),
-('Thomas Girard', 'thomas.girard@example.com', 'hhfdsword', '2627 Rue de la Solidarité, Montpellier', '2023-01-11'),
-('Julie David', 'julie.david@example.com', 'hword', '2829 Avenue de la Justice, Lille', '2023-01-12'),
-('Antoine Durand', 'antoine.durand@example.com', 'hdsard', '3031 Boulevard de la Liberté, Reims', '2023-01-13'),
-('Camille Fontaine', 'camille.fontaine@example.com', 'hadsaword', '3233 Rue de la Démocratie, Saint-Étienne', '2023-01-14'),
-('Nicolas Blanc', 'nicolas.blanc@example.com', 'hadsaword', '3435 Avenue de l\'Égalité, Toulon', '2023-01-15'),
-('Charlotte Denis', 'charlotte.denis@example.com', 'hasdsasword', '3637 Boulevard de lUnion, Grenoble', '2023-01-16'),
-('Quentin Leclerc', 'quentin.leclerc@example.com', 'hasdsasword', '3839 Rue de la Fraternité, Dijon', '2023-01-17'),
-('Clara Morin', 'clara.morin@example.com', 'hasdsaword', '4041 Avenue de la Paix, Angers', '2023-01-18'),
-('Guillaume Simon', 'guillaume.simon@example.com', 'hadsasword', '4243 Boulevard de l\'Amour, Nîmes', '2023-01-19'),
-('Alicia Robert', 'alicia.robert@example.com', 'hadsassword', '4445 Rue du Progrès, Villeurbanne', '2023-01-20'),
-('Laurent Lemoine', 'laurent.lemoine@example.com', 'password123', '4647 Rue de la Paix, Clermont-Ferrand', '2023-01-21'),
-('Amélie Dupuis', 'amelie.dupuis@example.com', 'monMotDePasse', '4849 Avenue de Verdun, Limoges', '2023-01-22'),
-('Romain Tessier', 'romain.tessier@example.com', 'superSecure', '5051 Boulevard de Strasbourg, Tours', '2023-01-23'),
-('Sophia Richard', 'sophia.richard@example.com', 'passw0rd!', '5253 Rue Victor Hugo, Amiens', '2023-01-24'),
-('Baptiste Petit', 'baptiste.petit@example.com', 'motdepasse', '5455 Avenue Jean Jaurès, Metz', '2023-01-25'),
-('Léa Leroy', 'lea.leroy@example.com', '12345', '5657 Boulevard Voltaire, Besançon', '2023-01-26'),
-('Cédric Roussel', 'cedric.roussel@example.com', 'azerty', '5859 Rue de la République, Perpignan', '2023-01-27'),
-('Émilie Morel', 'emilie.morel@example.com', 'qwerty', '6061 Avenue des États-Unis, Caen', '2023-01-28'),
-('Alexis Renaud', 'alexis.renaud@example.com', 'password', '6263 Boulevard de la Liberté, Orléans', '2023-01-29'),
-('Marine Caron', 'marine.caron@example.com', 'letmein', '6465 Rue des Martyrs, Mulhouse', '2023-01-30'),
-('Noémie Berger', 'noemie.berger@example.com', 's3cur3P@ss', '6667 Rue de la Liberté, Rouen', '2023-01-31'),
-('Lucas Mercier', 'lucas.mercier@example.com', 'p4ssword', '6869 Avenue du Général Leclerc, Avignon', '2023-02-01'),
-('Chloé Brunet', 'chloe.brunet@example.com', '123456789', '7071 Boulevard de Sébastopol, Nancy', '2023-02-02'),
-('Maxime Blanchard', 'maxime.blanchard@example.com', 'football', '7273 Rue des Rosiers, Saint-Denis', '2023-02-03'),
-('Pauline François', 'pauline.francois@example.com', 'pa$$w0rd', '7475 Avenue de la Marne, La Rochelle', '2023-02-04'),
-('Jérémy David', 'jeremy.david@example.com', 'myPa$$word', '7677 Boulevard Saint-Germain, Cannes', '2023-02-05'),
-('Maëlle Dupont', 'maelle.dupont@example.com', 'password1', '7879 Rue de Bretagne, Annecy', '2023-02-06'),
-('Théo Lambert', 'theo.lambert@example.com', 'qwerty123', '8081 Avenue Victor Hugo, Grenoble', '2023-02-07'),
-('Louise Vincent', 'louise.vincent@example.com', 'sunshine', '8283 Boulevard de la Villette, Brest', '2023-02-08'),
-('Hugo Martin', 'hugo.martin@example.com', 'iloveyou', '8485 Rue du Faubourg Saint-Antoine, Le Mans', '2023-02-09'),
-('Eva Rousseau', 'eva.rousseau@example.com', 'secret2023', '8687 Rue de lUniversité, Nancy', '2023-02-10'),
-('Arthur Morel', 'arthur.morel@example.com', 'motdepasse2023', '8989 Avenue des Ternes, Clermont-Ferrand', '2023-02-11'),
-('Juliette Petit', 'juliette.petit@example.com', '123soleil', '9091 Boulevard Haussmann, Rennes', '2023-02-12'),
-('Axel Dubois', 'axel.dubois@example.com', 'pianoforte', '9293 Rue du Commerce, Brest', '2023-02-13'),
-('Lola Vincent', 'lola.vincent@example.com', 'azerty2023', '9495 Avenue de la République, Le Havre', '2023-02-14'),
-('Nathan Lefevre', 'nathan.lefevre@example.com', 'qwerty2023', '9697 Rue de Rivoli, Reims', '2023-02-15'),
-('Alice Garnier', 'alice.garnier@example.com', 'aloha2023', '9899 Boulevard Saint-Michel, Saint-Étienne', '2023-02-16'),
-('Léo Martinez', 'leo.martinez@example.com', 'welcome2023', '0001 Rue de la Libération, Toulon', '2023-02-17'),
-('Zoé Leroy', 'zoe.leroy@example.com', 'smile2023', '0203 Avenue Jean Médecin, Grenoble', '2023-02-18'),
-('Valentin Robin', 'valentin.robin@example.com', 'spring2023', '0405 Boulevard de la Victoire, Dijon', '2023-02-19'),
-('Mathilde Perrin', 'mathilde.perrin@example.com', 'fall2023', '0607 Rue de Paris, Nîmes', '2023-02-20'),
-('Simon Bernard', 'simon.bernard@example.com', 'winter2023', '0809 Avenue de Lyon, Montpellier', '2023-02-21'),
-('Julie Renaud', 'julie.renaud@example.com', 'summer2023', '1011 Boulevard de Marseille, Bordeaux', '2023-02-22'),
-('Marc Andre', 'marc.andre@example.com', 'spring2024', '1213 Rue de Toulouse, Lille', '2023-02-23'),
-('Charlotte Lemoine', 'charlotte.lemoine@example.com', 'moon2023', '1415 Avenue de Nice, Strasbourg', '2023-02-24'),
-('Guillaume Joly', 'guillaume.joly@example.com', 'stars2023', '1617 Boulevard de Montpellier, Rennes', '2023-02-25'),
-('Sarah Dubois', 'sarah.dubois@example.com', 'ocean2023', '1819 Rue de Bordeaux, Le Mans', '2023-02-26'),
-('Yann Leclerc', 'yann.leclerc@example.com', 'forest2023', '2021 Avenue de Lille, Angers', '2023-02-27'),
-('Marion Roux', 'marion.roux@example.com', 'river2023', '2223 Boulevard de Strasbourg, Nantes', '2023-02-28'),
-('Nicolas Meyer', 'nicolas.meyer@example.com', 'mountain2023', '2425 Rue de Rennes, Clermont-Ferrand', '2023-03-01'),
-('Camille Olivier', 'camille.olivier@example.com', 'valley2023', '2627 Avenue de Angers, Saint-Denis', '2023-03-02'),
-('Benoit Blanchard', 'benoit.blanchard@example.com', 'lake2023', '2829 Boulevard de Nantes, Le Havre', '2023-03-03'),
-('Élise Dufour', 'elise.dufour@example.com', 'sky2023', '3031 Rue de Saint-Denis, Grenoble', '2023-03-04'),
-('Rémi Caron', 'remi.caron@example.com', 'cloud2023', '3233 Avenue de Le Havre, Dijon', '2023-03-05'),
-('Anaïs Dupond', 'anais.dupond@example.com', 'sun2023', '3435 Boulevard de Grenoble, Aix-en-Provence', '2023-03-06'),
-('Lucie Morin', 'lucie.morin@example.com', 'moonlight2023', '3637 Rue de Dijon, Brest', '2023-03-07'),
-('Alexis Girard', 'alexis.girard@example.com', 'dawn2023', '3839 Avenue de Aix-en-Provence, Villeurbanne', '2023-03-08'),
-('Mélanie Laurent', 'melanie.laurent@example.com', 'twilight2023', '4041 Boulevard de Brest, Nice', '2023-03-09'),
-('Tristan Roy', 'tristan.roy@example.com', 'nightfall2023', '4243 Rue de Villeurbanne, Limoges', '2023-03-10'),
-('Céline Fournier', 'celine.fournier@example.com', 'daybreak2023', '4445 Avenue de Nice, Amiens', '2023-03-11'),
-('Florian Petit', 'florian.petit@example.com', 'dusk2023', '4647 Rue des Écoles, Caen', '2023-03-12'),
-('Justine Brun', 'justine.brun@example.com', 'horizon2023', '4849 Avenue des Peupliers, Rouen', '2023-03-13'),
-('Damien Leroux', 'damien.leroux@example.com', 'glow2023', '5051 Boulevard des Fleurs, Nancy', '2023-03-14'),
-('Élodie Bernard', 'elodie.bernard@example.com', 'shine2023', '5253 Rue de la Forge, Reims', '2023-03-15'),
-('Sébastien Dubois', 'sebastien.dubois@example.com', 'gleam2023', '5455 Avenue de lOpéra, Saint-Étienne', '2023-03-16'),
-('Clémentine Rousseau', 'clementine.rousseau@example.com', 'sparkle2023', '5657 Boulevard de la Victoire, Toulon', '2023-03-17'),
-('Thibault Blanc', 'thibault.blanc@example.com', 'flash2023', '5859 Rue du Lac, Grenoble', '2023-03-18'),
-('Audrey Martin', 'audrey.martin@example.com', 'streak2023', '6061 Avenue des Vosges, Dijon', '2023-03-19'),
-('Maxence Muller', 'maxence.muller@example.com', 'beam2023', '6263 Boulevard de Normandie, Angers', '2023-03-20'),
-('Louane Dubois', 'louane.dubois@example.com', 'radiance2023', '6465 Rue des Lilas, Brest', '2023-03-21'),
-('Victor Leroy', 'victor.leroy@example.com', 'luster2023', '6667 Avenue du Maine, Le Mans', '2023-03-22'),
-('Océane Moreau', 'oceane.moreau@example.com', 'gleaming2023', '6869 Boulevard de lAtlantique, Nantes', '2023-03-23'),
-('Antoine Garnier', 'antoine.garnier@example.com', 'shimmer2023', '7071 Rue de Bretagne, Clermont-Ferrand', '2023-03-24'),
-('Maëlys Lemoine', 'maelys.lemoine@example.com', 'twinkle2023', '7273 Avenue de Provence, Limoges', '2023-03-25'),
-('Raphaël Gauthier', 'raphael.gauthier@example.com', 'glint2023', '7475 Boulevard du Littoral, Rouen', '2023-03-26'),
-('Zoé Poirier', 'zoe.poirier@example.com', 'scintillate2023', '7677 Rue du Marché, Nancy', '2023-03-27'),
-('Lucas Fontaine', 'lucas.fontaine@example.com', 'glimmer2023', '7879 Avenue de la Révolution, Reims', '2023-03-28'),
-('Hélène Dupond', 'helene.dupond@example.com', 'flicker2023', '8081 Boulevard des Étoiles, Saint-Étienne', '2023-03-29'),
-('Jérôme Carpentier', 'jerome.carpentier@example.com', 'spark2023', '8283 Rue de lUniversité, Toulon', '2023-03-30'),
-('Émilie Laurent', 'emilie.laurent@example.com', 'flare2023', '8485 Avenue de la Libération, Grenoble', '2023-03-31'),
-('Nina Mercier', 'nina.mercier@example.com', 'night2023', '8687 Rue des Pyrénées, Aix-en-Provence', '2023-04-01'),
-('Alexis Renard', 'alexis.renard@example.com', 'dawn2024', '8889 Avenue des Tilleuls, Le Havre', '2023-04-02'),
-('Margaux Colin', 'margaux.colin@example.com', 'evening2023', '9091 Rue du Soleil, Nancy', '2023-04-03'),
-('Félix Da Silva', 'felix.dasilva@example.com', 'morning2023', '9293 Boulevard de la Mer, Reims', '2023-04-04'),
-('Sarah Lefevre', 'sarah.lefevre@example.com', 'midnight2023', '9495 Avenue des Anges, Saint-Étienne', '2023-04-05'),
-('David Simon', 'david.simon@example.com', 'twilight2024', '9697 Rue de lEspoir, Toulon', '2023-04-06'),
-('Élisa Roussel', 'elisa.roussel@example.com', 'daylight2023', '9899 Boulevard de la Paix, Grenoble', '2023-04-07'),
-('Rémi Fontaine', 'remi.fontaine@example.com', 'sunset2023', '0001 Rue de lAurore, Dijon', '2023-04-08'),
-('Chloé Perrin', 'chloe.perrin@example.com', 'sunrise2023', '0203 Avenue des Braves, Angers', '2023-04-09'),
-('Thomas Riviere', 'thomas.riviere@example.com', 'day2023', '0405 Boulevard du Matin, Brest', '2023-04-10'),
-('Laura Petit', 'laura.petit@example.com', 'light2023', '0607 Rue de la Lumière, Le Mans', '2023-04-11'),
-('Samuel Bernard', 'samuel.bernard@example.com', 'bright2023', '0809 Avenue de lÉclat, Nantes', '2023-04-12'),
-('Marie Dubois', 'marie.dubois@example.com', 'shine2024', '1011 Rue des Lueurs, Clermont-Ferrand', '2023-04-13'),
-('Julien Leclerc', 'julien.leclerc@example.com', 'glow2024', '1213 Boulevard des Rayons, Limoges', '2023-04-14'),
-('Sophie Martin', 'sophie.martin@example.com', 'beam2024', '1415 Avenue de lIllumination, Rouen', '2023-04-15'),
-('Lucas Durand', 'lucas.durand@example.com', 'luminous2023', '1617 Rue de lAube, Nancy', '2023-04-16'),
-('Emma Thibault', 'emma.thibault@example.com', 'radiant2023', '1819 Boulevard du Jour, Reims', '2023-04-17'),
-('Hugo Boucher', 'hugo.boucher@example.com', 'gleam2023', '2021 Avenue de lOrée, Saint-Étienne', '2023-04-18'),
-('Inès Fournier', 'ines.fournier@example.com', 'glisten2023', '2223 Rue du Zenith, Toulon', '2023-04-19'),
-('Maxime Leroux', 'maxime.leroux@example.com', 'sparkle2024', '2425 Boulevard de lAurora, Grenoble', '2023-04-20');
+INSERT INTO Users (Username,Name, Email, Password, Address, InscriptionDate) VALUES
+("dasda", 'Alexandre Dubois', 'alexandre.dubois@example.com', 'dsadsadsa', '1234 Rue de la République, Paris', '2023-01-01'),
+("dadsasda",'Marie Joly', 'marie.joly@example.com', 'dsadsadsa', '5678 Avenue de la Liberté, Marseille', '2023-01-02'),
+("ddasdsaasda",'Lucas Martin', 'lucas.martin@example.com', 'dsadsa', '91011 Boulevard de lÉgalité, Lyon', '2023-01-03'),
+("dahjgfsda",'Chloé Bernard', 'chloe.bernard@example.com', 'dsadasdsa', '1213 Rue de la Fraternité, Toulouse', '2023-01-04'),
+("dadsadasda",'Maxime Petit', 'maxime.petit@example.com', 'fdsfdsfds', '1415 Avenue de la Paix, Nice', '2023-01-05'),
+("ddasdasdsadasasda",'Sophie Mercier', 'sophie.mercier@example.com', 'hgfd', '1617 Boulevard de lAmour, Nantes', '2023-01-06'),
+("djhgbasda",'Gabriel Rousseau', 'gabriel.rousseau@example.com', 'hashgfded_pasgfdsword', '1819 Rue du Progrès, Strasbourg', '2023-01-07'),
+("dasdasda",'Emma Moreau', 'emma.moreau@example.com', 'hgfdword', '2021 Avenue de la Victoire, Bordeaux', '2023-01-08'),
+("dgfsda",'Hugo Dupont', 'hugo.dupont@example.com', 'hasheddasrd', '2223 Boulevard de la Révolution, Lille', '2023-01-09'),
+("dakoisda",'Inès Lefebvre', 'ines.lefebvre@example.com', 'hasgfdrd', '2425 Rue de la Libération, Rennes', '2023-01-10'),
+("thom",'Thomas Girard', 'thomas.girard@example.com', 'hhfdsword', '2627 Rue de la Solidarité, Montpellier', '2023-01-11'),
+("JULDAVID",'Julie David', 'julie.david@example.com', 'hword', '2829 Avenue de la Justice, Lille', '2023-01-12'),
+("ANTOINEEMYGUYY",'Antoine Durand', 'antoine.durand@example.com', 'hdsard', '3031 Boulevard de la Liberté, Reims', '2023-01-13'),
+("camillehashtag",'Camille Fontaine', 'camille.fontaine@example.com', 'hadsaword', '3233 Rue de la Démocratie, Saint-Étienne', '2023-01-14'),
+("NicoWHiteBoy",'Nicolas Blanc', 'nicolas.blanc@example.com', 'hadsaword', '3435 Avenue de l\'Égalité, Toulon', '2023-01-15'),
+("CharlotteDenisTrust",'Charlotte Denis', 'charlotte.denis@example.com', 'hasdsasword', '3637 Boulevard de lUnion, Grenoble', '2023-01-16'),
+("Quentin avec un q",'Quentin Leclerc', 'quentin.leclerc@example.com', 'hasdsasword', '3839 Rue de la Fraternité, Dijon', '2023-01-17'),
+("snowhite",'Clara Morin', 'clara.morin@example.com', 'hasdsaword', '4041 Avenue de la Paix, Angers', '2023-01-18'),
+("guigui",'Guillaume Simon', 'guillaume.simon@example.com', 'hadsasword', '4243 Boulevard de l\'Amour, Nîmes', '2023-01-19'),
+("myfriendscallmealicia",'Alicia Robert', 'alicia.robert@example.com', 'hadsassword', '4445 Rue du Progrès, Villeurbanne', '2023-01-20'),
+("whatisausername",'Laurent Lemoine', 'laurent.lemoine@example.com', 'password123', '4647 Rue de la Paix, Clermont-Ferrand', '2023-01-21'),
+("ameliehiihih",'Amélie Dupuis', 'amelie.dupuis@example.com', 'monMotDePasse', '4849 Avenue de Verdun, Limoges', '2023-01-22'),
+("romane",'Romain Tessier', 'romain.tessier@example.com', 'superSecure', '5051 Boulevard de Strasbourg, Tours', '2023-01-23'),
+("sophie",'Sophia Richard', 'sophia.richard@example.com', 'passw0rd!', '5253 Rue Victor Hugo, Amiens', '2023-01-24'),
+("jesuispaspetit",'Baptiste Petit', 'baptiste.petit@example.com', 'motdepasse', '5455 Avenue Jean Jaurès, Metz', '2023-01-25'),
+("lareine",'Léa Leroy', 'lea.leroy@example.com', '12345', '5657 Boulevard Voltaire, Besançon', '2023-01-26'),
+("rouset",'Cédric Roussel', 'cedric.roussel@example.com', 'azerty', '5859 Rue de la République, Perpignan', '2023-01-27'),
+("emyyyyy",'Émilie Morel', 'emilie.morel@example.com', 'qwerty', '6061 Avenue des États-Unis, Caen', '2023-01-28'),
+("alx",'Alexis Renaud', 'alexis.renaud@example.com', 'password', '6263 Boulevard de la Liberté, Orléans', '2023-01-29'),
+("Lepen",'Marine Caron', 'marine.caron@example.com', 'letmein', '6465 Rue des Martyrs, Mulhouse', '2023-01-30'),
+("Berger",'Noémie Berger', 'noemie.berger@example.com', 's3cur3P@ss', '6667 Rue de la Liberté, Rouen', '2023-01-31'),
+("Mercier",'Lucas Mercier', 'lucas.mercier@example.com', 'p4ssword', '6869 Avenue du Général Leclerc, Avignon', '2023-02-01'),
+("Brunet",'Chloé Brunet', 'chloe.brunet@example.com', '123456789', '7071 Boulevard de Sébastopol, Nancy', '2023-02-02'),
+("Blanchard",'Maxime Blanchard', 'maxime.blanchard@example.com', 'football', '7273 Rue des Rosiers, Saint-Denis', '2023-02-03'),
+("bruhhhhhh",'Pauline François', 'pauline.francois@example.com', 'pa$$w0rd', '7475 Avenue de la Marne, La Rochelle', '2023-02-04'),
+("jeeee",'Jérémy David', 'jeremy.david@example.com', 'myPa$$word', '7677 Boulevard Saint-Germain, Cannes', '2023-02-05'),
+("maellaaaaa",'Maëlle Dupont', 'maelle.dupont@example.com', 'password1', '7879 Rue de Bretagne, Annecy', '2023-02-06'),
+("theooo",'Théo Lambert', 'theo.lambert@example.com', 'qwerty123', '8081 Avenue Victor Hugo, Grenoble', '2023-02-07'),
+("lvcool",'Louise Vincent', 'louise.vincent@example.com', 'sunshine', '8283 Boulevard de la Villette, Brest', '2023-02-08'),
+("hug",'Hugo Martin', 'hugo.martin@example.com', 'iloveyou', '8485 Rue du Faubourg Saint-Antoine, Le Mans', '2023-02-09'),
+("eva",'Eva Rousseau', 'eva.rousseau@example.com', 'secret2023', '8687 Rue de lUniversité, Nancy', '2023-02-10'),
+("arthur",'Arthur Morel', 'arthur.morel@example.com', 'motdepasse2023', '8989 Avenue des Ternes, Clermont-Ferrand', '2023-02-11'),
+("julietteeeeeeeee",'Juliette Petit', 'juliette.petit@example.com', '123soleil', '9091 Boulevard Haussmann, Rennes', '2023-02-12'),
+("Aldsaex",'Axel Dubois', 'axel.dubois@example.com', 'pianoforte', '9293 Rue du Commerce, Brest', '2023-02-13'),
+("lolav",'Lola Vincent', 'lola.vincent@example.com', 'azerty2023', '9495 Avenue de la République, Le Havre', '2023-02-14'),
+("Nate",'Nathan Lefevre', 'nathan.lefevre@example.com', 'qwerty2023', '9697 Rue de Rivoli, Reims', '2023-02-15'),
+("AG",'Alice Garnier', 'alice.garnier@example.com', 'aloha2023', '9899 Boulevard Saint-Michel, Saint-Étienne', '2023-02-16'),
+("martyyy",'Léo Martinez', 'leo.martinez@example.com', 'welcome2023', '0001 Rue de la Libération, Toulon', '2023-02-17'),
+("Royaute",'Zoé Leroy', 'zoe.leroy@example.com', 'smile2023', '0203 Avenue Jean Médecin, Grenoble', '2023-02-18'),
+("valentine",'Valentin Robin', 'valentin.robin@example.com', 'spring2023', '0405 Boulevard de la Victoire, Dijon', '2023-02-19'),
+("mathilda",'Mathilde Perrin', 'mathilde.perrin@example.com', 'fall2023', '0607 Rue de Paris, Nîmes', '2023-02-20'),
+("simone",'Simon Bernard', 'simon.bernard@example.com', 'winter2023', '0809 Avenue de Lyon, Montpellier', '2023-02-21'),
+("dsaddsadsadsadsa",'Julie Renaud', 'julie.renaud@example.com', 'summer2023', '1011 Boulevard de Marseille, Bordeaux', '2023-02-22'),
+("dasdasbjhksda",'Marc Andre', 'marc.andre@example.com', 'spring2024', '1213 Rue de Toulouse, Lille', '2023-02-23'),
+("poulpe",'Charlotte Lemoine', 'charlotte.lemoine@example.com', 'moon2023', '1415 Avenue de Nice, Strasbourg', '2023-02-24'),
+("GUIKOO",'Guillaume Joly', 'guillaume.joly@example.com', 'stars2023', '1617 Boulevard de Montpellier, Rennes', '2023-02-25'),
+("ecko",'Sarah Dubois', 'sarah.dubois@example.com', 'ocean2023', '1819 Rue de Bordeaux, Le Mans', '2023-02-26'),
+("yannybnelly",'Yann Leclerc', 'yann.leclerc@example.com', 'forest2023', '2021 Avenue de Lille, Angers', '2023-02-27'),
+("mariowhatisthatnamebruh",'Marion Roux', 'marion.roux@example.com', 'river2023', '2223 Boulevard de Strasbourg, Nantes', '2023-02-28'),
+("nicooolaaas",'Nicolas Meyer', 'nicolas.meyer@example.com', 'mountain2023', '2425 Rue de Rennes, Clermont-Ferrand', '2023-03-01'),
+("camimiy",'Camille Olivier', 'camille.olivier@example.com', 'valley2023', '2627 Avenue de Angers, Saint-Denis', '2023-03-02'),
+("Bennn",'Benoit Blanchard', 'benoit.blanchard@example.com', 'lake2023', '2829 Boulevard de Nantes, Le Havre', '2023-03-03'),
+("EliseAufour",'Élise Dufour', 'elise.dufour@example.com', 'sky2023', '3031 Rue de Saint-Denis, Grenoble', '2023-03-04'),
+("RemRem",'Rémi Caron', 'remi.caron@example.com', 'cloud2023', '3233 Avenue de Le Havre, Dijon', '2023-03-05'),
+("daAnnnnasda",'Anaïs Dupond', 'anais.dupond@example.com', 'sun2023', '3435 Boulevard de Grenoble, Aix-en-Provence', '2023-03-06'),
+("LucyLuke",'Lucie Morin', 'lucie.morin@example.com', 'moonlight2023', '3637 Rue de Dijon, Brest', '2023-03-07'),
+("MyguyAlex",'Alexis Girard', 'alexis.girard@example.com', 'dawn2023', '3839 Avenue de Aix-en-Provence, Villeurbanne', '2023-03-08'),
+("MygirlMelanie",'Mélanie Laurent', 'melanie.laurent@example.com', 'twilight2023', '4041 Boulevard de Brest, Nice', '2023-03-09'),
+("dsadsadsadsadsa",'Tristan Roy', 'tristan.roy@example.com', 'nightfall2023', '4243 Rue de Villeurbanne, Limoges', '2023-03-10'),
+("Celili",'Céline Fournier', 'celine.fournier@example.com', 'daybreak2023', '4445 Avenue de Nice, Amiens', '2023-03-11'),
+("FLoflo",'Florian Petit', 'florian.petit@example.com', 'dusk2023', '4647 Rue des Écoles, Caen', '2023-03-12'),
+("justinBrun",'Justine Brun', 'justine.brun@example.com', 'horizon2023', '4849 Avenue des Peupliers, Rouen', '2023-03-13'),
+("Lerouxpasroux",'Damien Leroux', 'damien.leroux@example.com', 'glow2023', '5051 Boulevard des Fleurs, Nancy', '2023-03-14'),
+("barnrdeur",'Élodie Bernard', 'elodie.bernard@example.com', 'shine2023', '5253 Rue de la Forge, Reims', '2023-03-15'),
+("sabsdubois",'Sébastien Dubois', 'sebastien.dubois@example.com', 'gleam2023', '5455 Avenue de lOpéra, Saint-Étienne', '2023-03-16'),
+("clemrousss",'Clémentine Rousseau', 'clementine.rousseau@example.com', 'sparkle2023', '5657 Boulevard de la Victoire, Toulon', '2023-03-17'),
+("thibhtib",'Thibault Blanc', 'thibault.blanc@example.com', 'flash2023', '5859 Rue du Lac, Grenoble', '2023-03-18'),
+("audreymartinezzzzx",'Audrey Martin', 'audrey.martin@example.com', 'streak2023', '6061 Avenue des Vosges, Dijon', '2023-03-19'),
+("mullerthesoccerplayer",'Maxence Muller', 'maxence.muller@example.com', 'beam2023', '6263 Boulevard de Normandie, Angers', '2023-03-20'),
+("duboislouane",'Louane Dubois', 'louane.dubois@example.com', 'radiance2023', '6465 Rue des Lilas, Brest', '2023-03-21'),
+("victoravecunc",'Victor Leroy', 'victor.leroy@example.com', 'luster2023', '6667 Avenue du Maine, Le Mans', '2023-03-22'),
+("oceeeeee",'Océane Moreau', 'oceane.moreau@example.com', 'gleaming2023', '6869 Boulevard de lAtlantique, Nantes', '2023-03-23'),
+("antooooine",'Antoine Garnier', 'antoine.garnier@example.com', 'shimmer2023', '7071 Rue de Bretagne, Clermont-Ferrand', '2023-03-24'),
+("maelys",'Maëlys Lemoine', 'maelys.lemoine@example.com', 'twinkle2023', '7273 Avenue de Provence, Limoges', '2023-03-25'),
+("raph",'Raphaël Gauthier', 'raphael.gauthier@example.com', 'glint2023', '7475 Boulevard du Littoral, Rouen', '2023-03-26'),
+("zozo",'Zoé Poirier', 'zoe.poirier@example.com', 'scintillate2023', '7677 Rue du Marché, Nancy', '2023-03-27'),
+("lucaslafontaine",'Lucas Fontaine', 'lucas.fontaine@example.com', 'glimmer2023', '7879 Avenue de la Révolution, Reims', '2023-03-28'),
+("helenecool",'Hélène Dupond', 'helene.dupond@example.com', 'flicker2023', '8081 Boulevard des Étoiles, Saint-Étienne', '2023-03-29'),
+("bruhhhh",'Jérôme Carpentier', 'jerome.carpentier@example.com', 'spark2023', '8283 Rue de lUniversité, Toulon', '2023-03-30'),
+("datessda",'Émilie Laurent', 'emilie.laurent@example.com', 'flare2023', '8485 Avenue de la Libération, Grenoble', '2023-03-31'),
+("dasdsadsadsadada",'Nina Mercier', 'nina.mercier@example.com', 'night2023', '8687 Rue des Pyrénées, Aix-en-Provence', '2023-04-01'),
+("dasdhjasdkiada",'Alexis Renard', 'alexis.renard@example.com', 'dawn2024', '8889 Avenue des Tilleuls, Le Havre', '2023-04-02'),
+("dasgdfsgfdda",'Margaux Colin', 'margaux.colin@example.com', 'evening2023', '9091 Rue du Soleil, Nancy', '2023-04-03'),
+("oijlj",'Félix Da Silva', 'felix.dasilva@example.com', 'morning2023', '9293 Boulevard de la Mer, Reims', '2023-04-04'),
+("iopuoripewpiorp",'Sarah Lefevre', 'sarah.lefevre@example.com', 'midnight2023', '9495 Avenue des Anges, Saint-Étienne', '2023-04-05'),
+("ljhlknnm",'David Simon', 'david.simon@example.com', 'twilight2024', '9697 Rue de lEspoir, Toulon', '2023-04-06'),
+("iuerw",'Élisa Roussel', 'elisa.roussel@example.com', 'daylight2023', '9899 Boulevard de la Paix, Grenoble', '2023-04-07'),
+("gfhjdvbn",'Rémi Fontaine', 'remi.fontaine@example.com', 'sunset2023', '0001 Rue de lAurore, Dijon', '2023-04-08'),
+("nmvxcz",'Chloé Perrin', 'chloe.perrin@example.com', 'sunrise2023', '0203 Avenue des Braves, Angers', '2023-04-09'),
+("thomaslepetittrain",'Thomas Riviere', 'thomas.riviere@example.com', 'day2023', '0405 Boulevard du Matin, Brest', '2023-04-10'),
+("lauralapetite",'Laura Petit', 'laura.petit@example.com', 'light2023', '0607 Rue de la Lumière, Le Mans', '2023-04-11'),
+("sambernard",'Samuel Bernard', 'samuel.bernard@example.com', 'bright2023', '0809 Avenue de lÉclat, Nantes', '2023-04-12'),
+("marieismygirl",'Marie Dubois', 'marie.dubois@example.com', 'shine2024', '1011 Rue des Lueurs, Clermont-Ferrand', '2023-04-13'),
+("JulLeclerc",'Julien Leclerc', 'julien.leclerc@example.com', 'glow2024', '1213 Boulevard des Rayons, Limoges', '2023-04-14'),
+("sophhhhhie",'Sophie Martin', 'sophie.martin@example.com', 'beam2024', '1415 Avenue de lIllumination, Rouen', '2023-04-15'),
+("LucDurHein",'Lucas Durand', 'lucas.durand@example.com', 'luminous2023', '1617 Rue de lAube, Nancy', '2023-04-16'),
+("emmaawatsonfangirl",'Emma Thibault', 'emma.thibault@example.com', 'radiant2023', '1819 Boulevard du Jour, Reims', '2023-04-17'),
+("hugoposay",'Hugo Boucher', 'hugo.boucher@example.com', 'gleam2023', '2021 Avenue de lOrée, Saint-Étienne', '2023-04-18'),
+("inessFOurnirerrr",'Inès Fournier', 'ines.fournier@example.com', 'glisten2023', '2223 Rue du Zenith, Toulon', '2023-04-19'),
+("maxPacioretty2323",'Maxime Leroux', 'maxime.leroux@example.com', 'sparkle2024', '2425 Boulevard de lAurora, Grenoble', '2023-04-20');
 
 
-INSERT INTO Categories (Nom, Description) VALUES
+INSERT INTO Categories (Name, Description) VALUES
 ('Hommes', 'Vêtements pour hommes'),
 ('Femmes', 'Vêtements pour femmes'),
 ('Enfants', 'Vêtements pour enfants'),
 ('Accessoires', 'Accessoires pour tous'),
 ('Unisexe', 'Vêtements pour tout le monde');
 
-INSERT INTO Produits (Nom, Description, Prix, Stock, CategorieID) VALUES
+INSERT INTO Products (Name, Description, Price, Stock, CategorieID) VALUES
 ('T-shirt Homme', 'Un T-shirt confortable pour homme.', 19.99, 100, 1),
 ('Robe Femme', "Une belle robe d'été pour femme.", 39.99, 50, 2),
 ('Jeans Enfant', 'Jeans résistants pour enfants.', 29.99, 75, 3),
@@ -291,13 +291,13 @@ INSERT INTO Produits (Nom, Description, Prix, Stock, CategorieID) VALUES
 ("Sac à dos de randonnée Unisexe", "Sac à dos de randonnée 40L, résistant et confortable.", 69.99, 55, 4),
 ("Chaussons confort Homme", "Chaussons en laine douce, semelle anti-dérapante.", 24.99, 90, 1);
 
-INSERT INTO Commandes (UserID, DateCommande, Statut, AdresseLivraison, Total) VALUES
-(1, NOW(), 'Expédiée', '1234 Rue Fictive, Ville', 59.97),
-(2, NOW(), 'En traitement', '5678 Rue Imaginaire, Ville', 39.99),
-(3, NOW(), 'Livré', '91011 Boulevard de lÉgalité, Lyon', 120.97),
-(4, NOW(), 'Annulée', '1213 Rue de la Fraternité, Toulouse', 0.00),
-(5, NOW(), 'En attente de paiement', '1415 Avenue de la Paix, Nice', 200.50),
-(6, NOW(), 'Expédiée', '1617 Boulevard de lAmour, Nantes', 75.00);
+INSERT INTO Commands (Username, DateCommand, Status, DeliveryAddress, Total)VALUES
+("marieismygirl", NOW(), 'Expédiée', '1234 Rue Fictive, Ville', 59.97),
+("marieismygirl", NOW(), 'En traitement', '5678 Rue Imaginaire, Ville', 39.99),
+("marieismygirl", NOW(), 'Livré', '91011 Boulevard de lÉgalité, Lyon', 120.97),
+("marieismygirl", NOW(), 'Annulée', '1213 Rue de la Fraternité, Toulouse', 0.00),
+("marieismygirl", NOW(), 'En attente de paiement', '1415 Avenue de la Paix, Nice', 200.50),
+("marieismygirl", NOW(), 'Expédiée', '1617 Boulevard de lAmour, Nantes', 75.00);
 
 INSERT INTO OrderItems (OrderID, ProductID, Quantite, PrixUnitaire) VALUES
 (1, 1, 3, 19.99),
@@ -309,13 +309,13 @@ INSERT INTO OrderItems (OrderID, ProductID, Quantite, PrixUnitaire) VALUES
 (6, 12, 1, 29.99),
 (6, 14, 1, 34.99);
 
-INSERT INTO ProductReviews (ProductID, UserID, Note, Commentaire, Date) VALUES
-(1, 1, 5, 'Excellent T-shirt, très confortable !', NOW()),
-(2, 2, 4, "J'adore cette robe, mais la livraison a pris du temps.", NOW()),
-(3, 3, 4, 'Bonne qualité mais taille un peu grand.', NOW()),
-(5, 5, 5, 'Parfaites pour la course. Très confortables.', NOW()),
-(10, 6, 2, 'Le short est bien mais les coutures sont fragiles.', NOW()),
-(12, 1, 3, 'Écharpe jolie mais plus fine que je ne le pensais.', NOW());
+INSERT INTO ProductReviews (ProductID, Username, Note, Commentaire, Date) VALUES
+(1, "marieismygirl", 5, 'Excellent T-shirt, très confortable !', NOW()),
+(2, "marieismygirl", 4, "J'adore cette robe, mais la livraison a pris du temps.", NOW()),
+(3, "marieismygirl", 4, 'Bonne qualité mais taille un peu grand.', NOW()),
+(5, "marieismygirl", 5, 'Parfaites pour la course. Très confortables.', NOW()),
+(10, "marieismygirl", 2, 'Le short est bien mais les coutures sont fragiles.', NOW()),
+(12, "marieismygirl", 3, 'Écharpe jolie mais plus fine que je ne le pensais.', NOW());
 
 
 

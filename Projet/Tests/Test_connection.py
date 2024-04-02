@@ -1,9 +1,11 @@
 import unittest
-from app import app
+from flask import Flask
+
+from Projet.server import app
 
 class TestHelloWorld(unittest.TestCase):
-
     def setUp(self):
+        app.config['TESTING'] = True
         self.client = app.test_client()
 
     def test_hello_world(self):

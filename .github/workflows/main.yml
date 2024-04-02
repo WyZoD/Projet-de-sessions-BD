@@ -36,4 +36,4 @@ jobs:
           echo "Contents of site-packages: $(ls -l venv/lib/python*/site-packages)"
 
       - name: Run tests
-        run: python Projet-de-sessions-BD/Test_connection.py
+        run: python Projet/Test_connection.py

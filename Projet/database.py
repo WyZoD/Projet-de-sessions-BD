@@ -204,7 +204,7 @@ def update_product_quantity(product_id, quantity_change):
     try:
         with conn.cursor() as cursor:
             cursor.execute("SELECT Stock FROM Products WHERE ProductID = %s", (product_id,))
-            current_stock = cursor.fetchone()['Stock']
+            current_stock = cursor.fetchone()[0]
 
             if current_stock + quantity_change < 0:
                 print("Attempted to reduce stock below zero. Operation cancelled.")

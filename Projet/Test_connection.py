@@ -1,7 +1,7 @@
 import unittest
 from flask import Flask
 
-from Projet.server import app
+from server import app
 
 class TestHelloWorld(unittest.TestCase):
     def setUp(self):

@@ -1,32 +1,17 @@
-<!DOCTYPE html>
-<html lang="eng">
-<head>
-    <meta charset="UTF-8">
-    <title>Projet de session BD H24</title>
-    <link rel="stylesheet" href="../static/style.css">
-    <script src="../static/app.js"></script>
-</head>
-<body>
-    <div class="button-group">
-        {%  if logged_in %}
-        <span>Welcome, {{ username }}</span>
-        <a href="/logout/" class="button">Logout</a>
-        {% else %}
-        <a href="/signup/" class="button">Sign Up</a>
-        <a href="/login/" class="button">Login</a>
-        {% endif %}
+{% extends "base.html" %}
+{% block title %}Product Listing{% endblock %}
+
+{% block content %}
+<div class="products">
+    {% for product in products %}
+    <div class="product">
+        <a href="{{ url_for('product_page', product_id=product.ProductID) }}">{{ product.Name }}</a>
+        <p>{{ product.Description }}</p>
+        <p>Price: ${{ product.Price }}</p>
+        <p>Stock: {{ product.Stock }}</p>
     </div>
-    <div class="products">
-        {% for product in products %}
-        <div class="product">
-            <a href="{{ url_for('product_page', product_id=product.ProductID) }}">{{ product.Name }}</a>
-            <p>{{ product.Description }}</p>
-            <p>Price: ${{ product.Price }}</p>
-            <p>Stock: {{ product.Stock }}</p>
-        </div>
-        {% else %}
-        <p>No products found.</p>
-        {% endfor %}
-    </div>
-</body>
-</html>
+    {% else %}
+    <p>No products found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

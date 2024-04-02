@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS Commands;
 DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS Categories;
 DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS CartItems;
 
 CREATE TABLE Users (
     Username varchar(40) PRIMARY KEY,
@@ -28,6 +29,15 @@ CREATE TABLE Products (
     Stock INT,
     CategorieID INT,
     FOREIGN KEY (CategorieID) REFERENCES Categories(CategorieID)
+);
+
+CREATE TABLE CartItems (
+    CartItemID INT AUTO_INCREMENT PRIMARY KEY,
+    Username VARCHAR(40),
+    ProductID INT,
+    Quantity INT,
+    FOREIGN KEY (Username) REFERENCES Users(Username),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
 );
 
 CREATE TABLE Commands (
@@ -321,6 +331,7 @@ INSERT INTO ProductReviews (ProductID, Username, Note, Commentaire, Date) VALUES
 
 
 SELECT * FROM Users
+SELECT * FROM CartItems
 
 
 

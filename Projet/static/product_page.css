@@ -1,78 +1,87 @@
 body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-    line-height: 1.6;
+    font-family: Arial, sans-serif;
 }
 
-h1, h2 {
+h1, h2, h3 {
     color: #333;
-}
-
-
-h1 {
-    background-color: #005A9C;
-    color: #ffffff;
-    padding: 20px 0;
-    margin: 0;
-    text-align: center;
 }
 
 p {
-    font-size: 18px;
-    margin-left: 20px;
+    color: #555;
+    line-height: 1.6;
 }
 
-h2 {
-    margin-left: 20px;
+
+.product-details p {
+    margin-bottom: 1rem;
+}
+
+
+.button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px 0;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+
+form {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+form label {
+    font-weight: bold;
+}
+
+form select, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+form textarea {
+    resize: vertical;
+}
+
+
+.login-prompt {
+    margin-top: 20px;
+}
+
+.login-prompt a {
+    color: #007bff;
 }
 
 .review {
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin: 20px;
-    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-top: 20px;
     border-radius: 5px;
+    border-left: 4px solid #007bff;
 }
 
 .review p {
     margin: 10px 0;
 }
 
-.review:nth-child(even) {
-    background-color: #f9f9f9;
+.review p:last-child {
+    color: #999;
+    font-size: 0.9rem;
 }
-
-.review p:first-child {
-    font-weight: bold;
-    color: #005A9C;
-}
-
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    border: none;
-    background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 30px;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    font-size: 16px;
-}
-
-.button:hover {
-    background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 75%);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
-}
-
-.button:active {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transform: translateY(0);
-}
-

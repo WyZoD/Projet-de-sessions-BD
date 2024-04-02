@@ -38,7 +38,6 @@ def add_signup():
     address = request.form["address"]
 
     if add_user(username, password, email, name, address):
-        flash("User added successfully")
         return redirect(url_for('login'))
     else:
         flash("User not added, this username or email address is already in use")
@@ -83,7 +82,6 @@ def login():
         user = get_user_by_email(email)
 
         if user and bcrypt.checkpw(password, user['Password'].encode('utf-8')):
-            flash("Logged in successfully!")
             session['username'] = user['Username']
             return redirect(url_for('index'))
         else:
@@ -156,6 +154,33 @@ def remove_from_cart(product_id):
 
     flash("Item removed from cart.")
     return redirect(url_for('show_cart'))
+
+@app.route("/place-order/", methods=["POST"])
+def place_order():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+    cart_items = get_cart_items(username)
+
+    if not cart_items:
+        flash("Your cart is empty.")
+        return redirect(url_for('show_cart'))
+
+    order_id = create_order(username)
+
+    for item in cart_items:
+        success = update_product_quantity(item['ProductID'], -item['Quantity'])
+        if not success:
+            flash(f"Could not place order for {item['Name']} due to insufficient stock.")
+            return redirect(url_for('show_cart'))
+        add_order_item(order_id, item['ProductID'], item['Quantity'], item['Price'])
+
+    clear_cart(username)  #
+    flash("Your order has been placed.")
+    return redirect(url_for('show_cart'))
+
+
 
 
 if __name__ == '__main__':

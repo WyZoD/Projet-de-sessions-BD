@@ -161,3 +161,83 @@ def remove_item_from_cart(username, product_id):
     finally:
         conn.close()
 
+
+def create_order(username):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+            INSERT INTO Commands (Username, DateCommand, Status)
+            VALUES (%s, NOW(), 'Pending')
+            """
+            cursor.execute(sql, (username,))
+            order_id = cursor.lastrowid
+        conn.commit()
+        return order_id
+    except Exception as e:
+        print(f"An error occurred while creating the order: {e}")
+        conn.rollback()
+        return None
+    finally:
+        conn.close()
+
+
+def add_order_item(order_id, product_id, quantity, price):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+            INSERT INTO OrderItems (OrderID, ProductID, Quantite, PrixUnitaire)
+            VALUES (%s, %s, %s, %s)
+            """
+            cursor.execute(sql, (order_id, product_id, quantity, price))
+        conn.commit()
+    except Exception as e:
+        print(f"An error occurred while adding an order item: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
+
+
+def update_product_quantity(product_id, quantity_change):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT Stock FROM Products WHERE ProductID = %s", (product_id,))
+            current_stock = cursor.fetchone()['Stock']
+
+            if current_stock + quantity_change < 0:
+                print("Attempted to reduce stock below zero. Operation cancelled.")
+                return False
+
+            sql = """
+            UPDATE Products 
+            SET Stock = Stock + %s 
+            WHERE ProductID = %s
+            """
+            cursor.execute(sql, (quantity_change, product_id))
+            conn.commit()
+            return True
+    except Exception as e:
+        print(f"An error occurred while updating product quantity: {e}")
+        conn.rollback()
+        return False
+    finally:
+        conn.close()
+
+
+def clear_cart(username):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            sql = "DELETE FROM CartItems WHERE Username = %s"
+            cursor.execute(sql, (username,))
+        conn.commit()
+    except Exception as e:
+        print(f"An error occurred while clearing the cart: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
+
+
+

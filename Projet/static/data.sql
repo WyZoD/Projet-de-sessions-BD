@@ -1,10 +1,11 @@
 DROP TABLE IF EXISTS ProductReviews;
 DROP TABLE IF EXISTS OrderItems;
 DROP TABLE IF EXISTS Commands;
+DROP TABLE IF EXISTS CartItems;
 DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS Categories;
 DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS CartItems;
+
 
 CREATE TABLE Users (
     Username varchar(40) PRIMARY KEY,
@@ -332,6 +333,8 @@ INSERT INTO ProductReviews (ProductID, Username, Note, Commentaire, Date) VALUES
 
 SELECT * FROM Users
 SELECT * FROM CartItems
+SELECT * FROM Products
+SELECT * FROM OrderItems
 
 
 

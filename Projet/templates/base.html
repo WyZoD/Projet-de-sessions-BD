@@ -9,10 +9,10 @@
 </head>
 <body>
     <div class="button-group">
-        {% if logged_in %}
-        <span>Welcome, {{ username }}</span>
+        {% if g.logged_in %}
+        <span>Welcome, {{ g.username }}</span>
         <a href="/logout/" class="button">Logout</a>
-            <a href="/cart/" class="button">Cart</a>
+        <a href="/cart/" class="button">Cart</a>
         {% else %}
         <a href="/signup/" class="button">Sign Up</a>
         <a href="/login/" class="button">Login</a>
@@ -21,6 +21,14 @@
         <a href="{{ url_for('index') }}" class="button">Back to Home</a>
         {% endif %}
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     {% block content %}
     {% endblock %}

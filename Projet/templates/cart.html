@@ -22,6 +22,9 @@
         </form>
     </div>
     {% endfor %}
+        <form action="{{ url_for('place_order') }}" method="post">
+        <button type="submit" class="button">Place Order</button>
+    </form>
 {% else %}
     <p>Your cart is empty.</p>
 {% endif %}

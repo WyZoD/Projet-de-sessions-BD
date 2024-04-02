@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from werkzeug.security import check_password_hash
 import bcrypt
 
-from Projet.database import *
+from database import *
 
 app = Flask(__name__)
 app.config['TESTING'] = True

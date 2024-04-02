@@ -16,7 +16,8 @@ def index():
     else:
         logged_in = False
         username = None
-    return render_template('index.html', logged_in=logged_in, username=username)
+    products = get_all_products()
+    return render_template('index.html', logged_in=logged_in, username=username, products=products)
 
 
 @app.route("/signup/")

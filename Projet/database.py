@@ -46,3 +46,14 @@ def get_user_by_email(email):
     except Exception as e:
         print(e)
         return None
+
+
+def get_all_products():
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+                cursor.execute("SELECT * FROM Products")
+                return cursor.fetchall()
+    except Exception as e:
+        print(e)
+        return []

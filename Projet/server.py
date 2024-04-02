@@ -5,6 +5,7 @@ import bcrypt
 from database import *
 
 app = Flask(__name__)
+app.config['TESTING'] = True
 app.secret_key = 'dsadsadasdasdasdasdas'
 
 
@@ -184,4 +185,4 @@ def place_order():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

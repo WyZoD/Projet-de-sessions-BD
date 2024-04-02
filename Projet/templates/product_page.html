@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.Name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='product_page.css') }}">
+
+</head>
+<body>
+    <h1>{{ product.Name }}</h1>
+    <a href="{{ url_for('index') }}" class="button">Back to Home</a>
+    <p>{{ product.Description }}</p>
+    <p>Price: ${{ product.Price }}</p>
+    <h2>Reviews</h2>
+    {% if reviews %}
+        {% for review in reviews %}
+        <div class="review">
+            <p>Rating: {{ review.Note }}/5</p>
+            <p>{{ review.Commentaire }}</p>
+            <p>By: {{ review.UserName }} on {{ review.Date }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No reviews yet.</p>
+    {% endif %}
+</body>
+</html>

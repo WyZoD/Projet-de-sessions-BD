@@ -41,6 +41,16 @@ def add_signup():
         return redirect(url_for('signup'))
 
 
+@app.route("/product/<int:product_id>/")
+def product_page(product_id):
+    product = get_product_by_id(product_id)
+    reviews = get_reviews_by_product_id(product_id)
+    if product:
+        return render_template('product_page.html', product=product, reviews=reviews)
+    else:
+        return "Product not found", 404
+
+
 @app.route("/login/", methods=["GET", "POST"])
 def login():
     error = None

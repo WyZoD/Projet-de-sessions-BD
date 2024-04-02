@@ -57,3 +57,24 @@ def get_all_products():
     except Exception as e:
         print(e)
         return []
+
+
+def get_product_by_id(product_id):
+    connection = get_db_connection()
+    with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("SELECT * FROM Products WHERE ProductID = %s", (product_id,))
+        product = cursor.fetchone()
+    return product
+
+
+def get_reviews_by_product_id(product_id):
+    connection = get_db_connection()
+    with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("""
+            SELECT r.*, u.Name AS UserName 
+            FROM ProductReviews r 
+            JOIN Users u ON r.Username = u.Username 
+            WHERE ProductID = %s
+            ORDER BY Date DESC""", (product_id,))
+        reviews = cursor.fetchall()
+    return reviews

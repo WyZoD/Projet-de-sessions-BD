@@ -19,7 +19,7 @@
     <div class="products">
         {% for product in products %}
         <div class="product">
-            <h2>{{ product.Name }}</h2>
+            <a href="{{ url_for('product_page', product_id=product.ProductID) }}">{{ product.Name }}</a>
             <p>{{ product.Description }}</p>
             <p>Price: ${{ product.Price }}</p>
             <p>Stock: {{ product.Stock }}</p>

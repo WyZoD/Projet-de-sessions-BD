@@ -7,6 +7,7 @@
 </head>
 <body>
 <div class="container">
+    <a href="{{ url_for('index') }}" class="button">Back to Home</a>
         <h1>Sign Up</h1>
         <form action="/addSignup" method="post">
               <input name="username" type="text" placeholder="username" required>

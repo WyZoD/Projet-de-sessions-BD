@@ -42,7 +42,6 @@ def add_signup():
 @app.route("/login/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        print(request.form["password"])
         email = request.form["email"]
         password = request.form["password"]
 
@@ -56,6 +55,13 @@ def login():
             flash("Invalid email or password")
             return redirect(url_for('login'))
     return render_template("login.html")
+
+
+@app.route("/logout/")
+def logout():
+    session.pop('username', None)
+    flash("You have been logged out.")
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

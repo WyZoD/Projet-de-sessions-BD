@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, jsonify, flash, redirect, url_for, session
+from flask import Flask, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import check_password_hash
+import bcrypt
 
 from database import *
 
@@ -41,20 +42,20 @@ def add_signup():
 
 @app.route("/login/", methods=["GET", "POST"])
 def login():
+    error = None
     if request.method == "POST":
         email = request.form["email"]
-        password = request.form["password"]
-
+        password = request.form["password"].encode('utf-8')
         user = get_user_by_email(email)
 
-        if user and check_password_hash(user['Password'], password):
+        if user and bcrypt.checkpw(password, user['Password'].encode('utf-8')):
             flash("Logged in successfully!")
             session['username'] = user['Username']
             return redirect(url_for('index'))
         else:
-            flash("Invalid email or password")
-            return redirect(url_for('login'))
-    return render_template("login.html")
+            error = "Invalid email or password"
+            return render_template("login.html", error=error)
+    return render_template("login.html", error=error)
 
 
 @app.route("/logout/")

@@ -2,6 +2,8 @@ import pymysql
 from flask.cli import load_dotenv
 import os
 import pymysql.cursors
+import bcrypt
+
 
 from werkzeug.security import generate_password_hash
 
@@ -20,7 +22,7 @@ def get_db_connection():
 
 
 def add_user(username, password, email, name, address):
-    hashed_password = generate_password_hash(password)
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     with get_db_connection() as connection:
         with connection.cursor() as cursor:
             try:
@@ -44,4 +46,3 @@ def get_user_by_email(email):
     except Exception as e:
         print(e)
         return None
-

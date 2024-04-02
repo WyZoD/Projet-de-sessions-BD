@@ -8,9 +8,12 @@
 <body>
 <div class="container">
         <h1>Log In</h1>
+        {% if error %}
+        <h3 style="color: red">Incorrect email or password</h3>
+        {% endif %}
         <form action="/login" method="post">
-          <input name="email" type="email" placeholder="email">
-          <input name="password" type="password" placeholder="password">
+          <input name="email" type="email" placeholder="email" required>
+          <input name="password" type="password" placeholder="password" required>
             <button type="submit">Log In</button>
         </form>
 </div>

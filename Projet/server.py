@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, session, g
+from flask import Flask, render_template, request, flash, redirect, url_for, session, g, abort
 from werkzeug.security import check_password_hash
 import bcrypt
 
@@ -20,10 +20,12 @@ def index():
     products = get_all_products()
     return render_template('index.html', logged_in=logged_in, username=username, products=products)
 
+
 @app.before_request
 def before_request():
     g.logged_in = 'username' in session
     g.username = session.get('username')
+
 
 @app.route("/signup/")
 def signup():
@@ -53,7 +55,8 @@ def product_page(product_id):
     product = get_product_by_id(product_id)
     reviews = get_reviews_by_product_id(product_id)
     logged_in = 'username' in session
-    return render_template('product_page.html', product=product, reviews=reviews, logged_in=logged_in, username=session.get('username'))
+    return render_template('product_page.html', product=product, reviews=reviews, logged_in=logged_in,
+                           username=session.get('username'))
 
 
 @app.route("/add-review/<int:product_id>/", methods=["POST"])
@@ -119,7 +122,6 @@ def show_cart():
     return render_template('cart.html', cart_items=cart_items, logged_in=logged_in, username=username)
 
 
-
 @app.route("/logout/")
 def logout():
     session.pop('username', None)
@@ -156,6 +158,7 @@ def remove_from_cart(product_id):
     flash("Item removed from cart.")
     return redirect(url_for('show_cart'))
 
+
 @app.route("/place-order/", methods=["POST"])
 def place_order():
     if 'username' not in session:
@@ -182,7 +185,17 @@ def place_order():
     return redirect(url_for('show_cart'))
 
 
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    if not app.config['TESTING']:
+        # Prevent using this route in non-testing environments
+        abort(404)
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+    return 'Server is shutting down...'
 
 
 if __name__ == '__main__':
-    app.run(debug=True) #essentials for the tests
+    app.run(debug=True)  # essentials for the tests

@@ -1,30 +1,35 @@
+import os
 import unittest
 import time
 from threading import Thread
+
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Projet.database import get_db_connection
 from server import app
 from Projet import server
-
+from werkzeug.serving import make_server
 
 class TestUserSignup(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        os.environ['FLASK_TESTING'] = '1'
         app.config['TESTING'] = True
         # Start Flask app in a separate thread
-        cls.flask_thread = Thread(target=lambda: server.app.run(use_reloader=False, debug=True, port=5000))
-        cls.flask_thread.start()
+        cls.server = make_server('127.0.0.1', 5000, app)
+        cls.server_thread = Thread(target=cls.server.serve_forever)
+        cls.server_thread.start()
 
     def setUp(self):
+        chrome_options = Options()
+
         self.client = app.test_client()
-        self.driver = webdriver.Chrome(options=None)  # Maybe add things to options to prevent flakiness
+        self.driver = webdriver.Chrome(options=chrome_options)
         self.base_url = "http://127.0.0.1:5000"
 
     def test_signup_process(self):
@@ -42,8 +47,10 @@ class TestUserSignup(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # /todo how do i close the server lmao
-        cls.flask_thread.join()
+        # Stop the Flask server
+        cls.server.shutdown()
+        cls.server_thread.join()
+        os.environ.pop('FLASK_TESTING', None)  # Clean up environment variable
 
     def tearDown(self):
         self.driver.quit()
@@ -97,4 +104,5 @@ class TestHelloWorld(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    app.run(debug=True, port=5000)
+    # unittest.main()

@@ -4,7 +4,6 @@ import time
 from threading import Thread
 
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -86,7 +85,7 @@ class TestHelloWorld(unittest.TestCase):
 
         self.assertTrue('/login/' in response.headers['Location'], "Redirection to login page expected after signup")
 
-    # To kill the create user for the test
+    # To kill the created user for the test
     def tearDown(self):
         print("Starting tearDown process...")
         try:

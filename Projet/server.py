@@ -198,4 +198,4 @@ def shutdown():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)  # essentials for the tests
+    app.run()  # essentials for the tests

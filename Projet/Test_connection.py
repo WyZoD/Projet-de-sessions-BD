@@ -13,8 +13,9 @@ from server import app
 from Projet import server
 from werkzeug.serving import make_server
 
-class TestUserSignup(unittest.TestCase):
 
+class TestUserSignup(unittest.TestCase):
+    ## Start the server
     @classmethod
     def setUpClass(cls):
         os.environ['FLASK_TESTING'] = '1'
@@ -31,6 +32,7 @@ class TestUserSignup(unittest.TestCase):
         self.driver = webdriver.Chrome(options=chrome_options)
         self.base_url = "http://127.0.0.1:5000"
 
+    # test Zone
     def test_signup_process(self):
         self.driver.get(f"{self.base_url}/signup")
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.NAME, "username"))).send_keys(
@@ -44,6 +46,7 @@ class TestUserSignup(unittest.TestCase):
         self.assertTrue(self.driver.current_url.endswith("/login/"),
                         "User should be redirected to login page after signup.")
 
+    # SHUTDOWN THE SERVER
     @classmethod
     def tearDownClass(cls):
         # Stop the Flask server

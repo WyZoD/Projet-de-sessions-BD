@@ -6,7 +6,7 @@ from database import *
 
 app = Flask(__name__)
 app.config['TESTING'] = True
-app.secret_key = 'dsadsadasdasdasdasdas'
+app.secret_key = 'mega_secret_key'
 
 
 @app.route("/")
@@ -20,10 +20,12 @@ def index():
     products = get_all_products()
     return render_template('index.html', logged_in=logged_in, username=username, products=products)
 
+
 @app.before_request
 def before_request():
     g.logged_in = 'username' in session
     g.username = session.get('username')
+
 
 @app.route("/signup/")
 def signup():
@@ -156,30 +158,62 @@ def remove_from_cart(product_id):
     flash("Item removed from cart.")
     return redirect(url_for('show_cart'))
 
+
 @app.route("/place-order/", methods=["POST"])
 def place_order():
+    if 'username' not in session:
+        flash("You need to be logged in to place an order.", "error")
+        return redirect(url_for('login'))
+
+    username = session['username']
+    delivery_address = request.form.get('delivery_address')  # Assuming delivery address comes from the form
+
+    conn = get_db_connection()
+    try:
+        conn.begin()
+        cart_items = get_cart_items(username)
+
+        total = sum(item['Price'] * item['Quantity'] for item in cart_items)
+
+        if not cart_items:
+            raise Exception("Your cart is empty.")
+
+        for item in cart_items:
+            product = get_product_by_id(item['ProductID'],conn)
+            if item['Quantity'] > product['Stock']:
+                raise Exception(f"Insufficient stock for product ID {item['ProductID']}.")
+
+        order_id = create_order(username, delivery_address, total, conn)
+
+        for item in cart_items:
+            update_product_quantity(item['ProductID'], -item['Quantity'], conn)
+            add_order_item(order_id, item['ProductID'], item['Quantity'], item['Price'], conn)
+        clear_cart(username, conn)
+        conn.commit()
+        flash("Your order has been placed successfully.")
+    except Exception as e:
+        conn.rollback()
+        flash(f"An error occurred: {e}")
+    finally:
+        conn.close()
+    return redirect(url_for('show_orders'))
+
+
+
+@app.route("/orders/")
+def show_orders():
     if 'username' not in session:
         return redirect(url_for('login'))
 
     username = session['username']
-    cart_items = get_cart_items(username)
+    orders = get_orders(username)
 
-    if not cart_items:
-        flash("Your cart is empty.")
-        return redirect(url_for('show_cart'))
+    for order in orders:
+        order_id = order['OrderID']
+        order['items'] = get_order_items(order_id)
 
-    order_id = create_order(username)
-
-    for item in cart_items:
-        success = update_product_quantity(item['ProductID'], -item['Quantity'])
-        if not success:
-            flash(f"Could not place order for {item['Name']} due to insufficient stock.")
-            return redirect(url_for('show_cart'))
-        add_order_item(order_id, item['ProductID'], item['Quantity'], item['Price'])
-
-    clear_cart(username)  #
-    flash("Your order has been placed.")
-    return redirect(url_for('show_cart'))
+    logged_in = 'username' in session
+    return render_template('orders.html', orders=orders, logged_in=logged_in, username=username)
 
 
 

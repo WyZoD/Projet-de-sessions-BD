@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}My Orders{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='orders.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>My Orders</h1>
+    {% for order in orders %}
+        <div class="order">
+            <h2>Order #{{ order['OrderID'] }}</h2>
+            <p>Order Date: {{ order['DateCommand'].strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>Order Total: ${{ order['Total'] }}</p>
+            <p>Order Status: {{ order['Status'] }}</p>
+            <p>Delivery Address: {{ order['DeliveryAddress'] }}</p>
+            <h3>Items</h3>
+            <ul>
+                {% for item in order['items'] %}
+                    <li>
+                        {{ item['Quantite'] }}x {{ item['Name'] }} at ${{ item['PrixUnitaire'] }} each
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p>You have no orders.</p>
+    {% endfor %}
+{% endblock %}

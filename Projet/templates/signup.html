@@ -9,6 +9,13 @@
 <div class="container">
     <a href="{{ url_for('index') }}" class="button">Back to Home</a>
         <h1>Sign Up</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
         <form action="/addSignup" method="post">
               <input name="username" type="text" placeholder="username" required>
               <input name="name" type="text" placeholder="name" required>

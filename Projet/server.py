@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, session, g
+import random
+
+from flask import Flask, render_template, request, flash, redirect, url_for, session, g, jsonify
 from werkzeug.security import check_password_hash
 import bcrypt
 
@@ -214,6 +216,49 @@ def show_orders():
 
     logged_in = 'username' in session
     return render_template('orders.html', orders=orders, logged_in=logged_in, username=username)
+
+
+@app.route("/fun-fact/")
+def fun_fact():
+    if 'username' not in session:
+        flash("You need to be logged in to view fun facts.", "warning")
+        return redirect(url_for('login'))
+
+    most_popular_product = get_most_popular_product()
+    highest_spending_customer = get_highest_spending_customer()
+    average_rating_per_category = get_average_rating_per_category()
+    percentage_never_sold = get_percentage_never_sold()
+    sales_facts = get_total_sales_by_category()
+    never_ordered_products = get_never_ordered_products()
+
+    fun_facts = []
+
+    if sales_facts:
+        for fact in sales_facts:
+            fun_facts.append(
+                f"Category {fact['CategoryName']} has total sales of ${fact['TotalSales']:.2f}!")
+
+    if never_ordered_products:
+        product_count = len(never_ordered_products)
+        fun_facts.append(f"Did you know? We have {product_count} products that have never been ordered!")
+
+    if most_popular_product:
+        fun_facts.append(f"The most popular product is {most_popular_product[0]} with {most_popular_product[1]} units sold.")
+
+    if highest_spending_customer:
+        fun_facts.append(f"Our highest spending customer is {highest_spending_customer[0]}, spending a total of ${highest_spending_customer[1]:.2f}.")
+
+    if average_rating_per_category:
+        for category in average_rating_per_category:
+            fun_facts.append(f"Category {category[0]} has an average product rating of {category[1]:.2f} stars.")
+
+    if percentage_never_sold:
+        fun_facts.append(f"{percentage_never_sold[0]}% of our products have never been sold.")
+
+    if not fun_facts:
+        fun_facts.append("Our website is growing every day. Check back soon for more interesting facts!")
+
+    return render_template("fun_fact.html", fun_facts=fun_facts)
 
 
 

@@ -18,7 +18,7 @@
             <ul>
                 {% for item in order['items'] %}
                     <li>
-                        {{ item['Quantite'] }}x {{ item['Name'] }} at ${{ item['PrixUnitaire'] }} each
+                        {{ item['Quantity'] }}x {{ item['Name'] }} at ${{ item['UnitPrice'] }} each
                     </li>
                 {% endfor %}
             </ul>

@@ -210,7 +210,7 @@ def add_order_item(order_id, product_id, quantity, price, conn=None):
     try:
         with conn.cursor() as cursor:
             sql = """
-                INSERT INTO OrderItems (OrderID, ProductID, Quantite, PrixUnitaire)
+                INSERT INTO OrderItems (OrderID, ProductID, Quantity, UnitPrice)
                 VALUES (%s, %s, %s, %s)
                 """
             cursor.execute(sql, (order_id, product_id, quantity, price))
@@ -223,7 +223,6 @@ def add_order_item(order_id, product_id, quantity, price, conn=None):
     finally:
         if own_connection:
             conn.close()
-
 
 
 def update_product_quantity(product_id, quantity_change, conn=None):
@@ -308,5 +307,94 @@ def get_order_items(order_id):
         print(f"Error: {e}")
         return []
 
+
+def get_total_sales_by_category():
+    query = """
+    SELECT c.Name AS CategoryName, SUM(o.Quantity * o.UnitPrice) AS TotalSales
+    FROM OrderItems o
+    JOIN Products p ON o.ProductID = p.ProductID
+    JOIN Categories c ON p.CategorieID = c.CategorieID
+    GROUP BY c.CategorieID
+    ORDER BY TotalSales DESC;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
+
+def get_never_ordered_products():
+    query = """
+    SELECT *
+    FROM Products
+    WHERE ProductID NOT IN (SELECT DISTINCT ProductID FROM OrderItems);
+    """
+    with get_db_connection() as connection:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
+
+def get_most_popular_product():
+    query = """
+    SELECT p.Name, SUM(oi.Quantity) AS TotalQuantity
+    FROM Products p
+    JOIN OrderItems oi ON p.ProductID = oi.ProductID
+    GROUP BY p.ProductID
+    ORDER BY TotalQuantity DESC
+    LIMIT 1;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            result = cursor.fetchone()
+    return result
+
+
+def get_highest_spending_customer():
+    query = """
+    SELECT u.Name, SUM(oi.Quantity * oi.UnitPrice) AS TotalSpent
+    FROM Users u
+    JOIN Commands c ON u.Username = c.Username
+    JOIN OrderItems oi ON c.OrderID = oi.OrderID
+    GROUP BY u.Username
+    ORDER BY TotalSpent DESC
+    LIMIT 1;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            result = cursor.fetchone()
+    return result
+
+
+def get_average_rating_per_category():
+    query = """
+    SELECT cat.Name AS CategoryName, AVG(pr.Note) AS AverageRating
+    FROM Categories cat
+    JOIN Products p ON cat.CategorieID = p.CategorieID
+    JOIN ProductReviews pr ON p.ProductID = pr.ProductID
+    GROUP BY cat.CategorieID
+    ORDER BY AverageRating DESC;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            results = cursor.fetchall()
+    return results
+
+
+def get_percentage_never_sold():
+    query = """
+    SELECT ROUND((COUNT(DISTINCT p.ProductID) / (SELECT COUNT(*) FROM Products) * 100), 2) AS PercentageNeverSold
+    FROM Products p
+    LEFT JOIN OrderItems oi ON p.ProductID = oi.ProductID
+    WHERE oi.ProductID IS NULL;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            result = cursor.fetchone()
+    return result
 
 

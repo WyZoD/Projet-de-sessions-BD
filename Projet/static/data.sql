@@ -332,10 +332,15 @@ INSERT INTO ProductReviews (ProductID, Username, Note, Commentaire, Date) VALUES
 (12, "marieismygirl", 3, 'Scarf is pretty but thinner than I thought.', NOW());
 
 
-SELECT * FROM Users;
-SELECT * FROM CartItems;
-SELECT * FROM Products;
-SELECT * FROM OrderItems;
-
+CREATE INDEX idx_username ON Users (Username);
+CREATE INDEX idx_product_id ON Products (ProductID);
+CREATE INDEX idx_product_id ON ProductReviews (ProductID);
+CREATE INDEX idx_username ON ProductReviews (Username);
+CREATE INDEX idx_category_id ON Categories (CategorieID);
+CREATE INDEX idx_order_id ON OrderItems (OrderID);
+CREATE INDEX idx_product_id ON OrderItems (ProductID);
+CREATE INDEX idx_username ON CartItems (Username);
+CREATE INDEX idx_product_id ON CartItems (ProductID);
+CREATE INDEX idx_username ON Commands (Username);
 
 

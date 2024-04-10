@@ -10,56 +10,6 @@ from Projet.database import get_db_connection
 from server import app
 from werkzeug.serving import make_server
 
-#/todo : séparer le fichier test ui et test unitaire ca crée un bug de lancement de test
-class TestUserSignup(unittest.TestCase):
-    ## Start the server
-    @classmethod
-    def setUpClass(cls):
-        os.environ['FLASK_TESTING'] = '1'
-        app.config['TESTING'] = True
-        # Start Flask app in a separate thread
-        cls.server = make_server('127.0.0.1', 5000, app)
-        cls.server_thread = Thread(target=cls.server.serve_forever)
-        cls.server_thread.start()
-
-    def setUp(self):
-        chrome_options = Options()
-
-        self.client = app.test_client()
-        self.driver = webdriver.Chrome(options=chrome_options)
-        self.base_url = "http://127.0.0.1:5000"
-
-    # test Zone
-    def test_signup_process(self):
-        self.driver.get(f"{self.base_url}/signup")
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.NAME, "username"))).send_keys(
-            "testuser123")
-        self.driver.find_element(By.NAME, "name").send_keys("Test User")
-        self.driver.find_element(By.NAME, "email").send_keys("testuser123@example.com")
-        self.driver.find_element(By.NAME, "password").send_keys("testpassword")
-        self.driver.find_element(By.NAME, "address").send_keys("123 Test St")
-        self.driver.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-        WebDriverWait(self.driver, 10).until(EC.url_contains("/login"))
-        self.assertTrue(self.driver.current_url.endswith("/login/"),
-                        "User should be redirected to login page after signup.")
-
-    # SHUTDOWN THE SERVER
-    @classmethod
-    def tearDownClass(cls):
-        # Stop the Flask server
-        cls.server.shutdown()
-        cls.server_thread.join()
-        os.environ.pop('FLASK_TESTING', None)  # Clean up environment variable
-
-    def tearDown(self):
-        self.driver.quit()
-        # Cleanup the database
-        with get_db_connection() as conn:
-            with conn.cursor() as cursor:
-                sql = "DELETE FROM Users WHERE username = %s"
-                cursor.execute(sql, ("testuser123",))
-                conn.commit()
-
 
 class TestHelloWorld(unittest.TestCase):
     def setUp(self):

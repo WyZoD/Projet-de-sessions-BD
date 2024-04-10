@@ -139,6 +139,40 @@ class TestUserSignup(unittest.TestCase):
         self.assertIn("Your order has been placed.", flash_message,
                       "Order confirmation message did not appear as expected.")
 
+        # SQL TEST
+        print("SQL TESTS STARTING...")
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+
+                # Check if the user was created in the database
+                username_to_check = "testuser123"
+                cursor.execute("SELECT * FROM Users WHERE Username = %s", (username_to_check,))
+                result = cursor.fetchone()
+
+                # Check if the order was created in the database
+                self.assertIsNotNone(result, "User was not created in the database.")
+                cursor.execute("""
+                                                SELECT * FROM Commands
+                                                WHERE Username = %s
+                                                ORDER BY DateCommand DESC
+                                                """, (username_to_check,))
+                result = cursor.fetchone()
+                self.assertIsNotNone(result, "Order was not created in the database for the user.")
+                product_id_to_check = 1  # We took the first product in the Test before
+
+                # Check if the review was added to the database
+                review_comment = "This is a test review. Amazing product!"
+                cursor.execute("""
+                                                SELECT * FROM ProductReviews
+                                                WHERE ProductID = %s AND Commentaire = %s
+                                                """, (product_id_to_check, review_comment))
+                result = cursor.fetchone()
+                self.assertIsNotNone(result, "Review was not added to the database.")
+
+        print("SQL TESTS COMPLETED.")
+
+        # TEST SQL
+
     # SHUTDOWN THE SERVER
     @classmethod
     def tearDownClass(cls):
@@ -151,7 +185,7 @@ class TestUserSignup(unittest.TestCase):
         # Connect to the database
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
-                
+
                 # Delete any OrderItems for the test user by joining on Commands (Orders) table
                 delete_order_items_sql = """
                 DELETE OrderItems
@@ -181,6 +215,8 @@ class TestUserSignup(unittest.TestCase):
             conn.commit()
 
         super().tearDown()
+
+
 
 
 if __name__ == '__main__':

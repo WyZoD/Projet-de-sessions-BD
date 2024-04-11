@@ -84,6 +84,18 @@ class TestUserSignup(unittest.TestCase):
         WebDriverWait(self.driver, 10).until(EC.url_contains("/product/"))
         current_url = self.driver.current_url
 
+        # SQL TEST
+        product_id_to_check = 1  # Assuming the product ID is known and fixed for this test
+
+        # Step 1: Retrieve the initial stock value for the product
+        initial_stock = None
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT Stock FROM Products WHERE ProductID = %s", (product_id_to_check,))
+                result = cursor.fetchone()
+                initial_stock = result[0]  # Accessing the first item in the tuple
+
+
         # Assert that the URL contains the word "product"
         self.assertIn("product", current_url, "URL does not contain 'product'.")
 
@@ -140,36 +152,68 @@ class TestUserSignup(unittest.TestCase):
                       "Order confirmation message did not appear as expected.")
 
         # SQL TEST
+        final_stock = None
+
         print("SQL TESTS STARTING...")
+
+        # Initialize a counter for passed tests
+        tests_passed = 0
+
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
-
                 # Check if the user was created in the database
                 username_to_check = "testuser123"
                 cursor.execute("SELECT * FROM Users WHERE Username = %s", (username_to_check,))
                 result = cursor.fetchone()
+                self.assertIsNotNone(result, "User was not created in the database.")
+                print(f"Test Passed: User '{username_to_check}' found in the database.")
+                tests_passed += 1
 
                 # Check if the order was created in the database
-                self.assertIsNotNone(result, "User was not created in the database.")
                 cursor.execute("""
-                                                SELECT * FROM Commands
-                                                WHERE Username = %s
-                                                ORDER BY DateCommand DESC
-                                                """, (username_to_check,))
+                    SELECT * FROM Commands
+                    WHERE Username = %s
+                    ORDER BY DateCommand DESC
+                    """, (username_to_check,))
                 result = cursor.fetchone()
                 self.assertIsNotNone(result, "Order was not created in the database for the user.")
+                print(f"Test Passed: Order created in the database for user '{username_to_check}'.")
+                tests_passed += 1
+
                 product_id_to_check = 1  # We took the first product in the Test before
+
+                # Check if the order items were created in the database
+                cursor.execute("""
+                SELECT * FROM OrderItems
+                JOIN Commands ON OrderItems.OrderID = Commands.OrderID
+                WHERE Commands.Username = %s
+                """, (username_to_check,))
+                results = cursor.fetchall()
+                self.assertGreater(len(results), 0, "Order items were not created in the database for the order.")
+                print(f"Test Passed: Order items created in the database for the order of user '{username_to_check}'.")
+                tests_passed += 1
 
                 # Check if the review was added to the database
                 review_comment = "This is a test review. Amazing product!"
                 cursor.execute("""
-                                                SELECT * FROM ProductReviews
-                                                WHERE ProductID = %s AND Commentaire = %s
-                                                """, (product_id_to_check, review_comment))
+                    SELECT * FROM ProductReviews
+                    WHERE ProductID = %s AND Commentaire = %s
+                    """, (product_id_to_check, review_comment))
                 result = cursor.fetchone()
                 self.assertIsNotNone(result, "Review was not added to the database.")
+                print(f"Test Passed: Review added to the database for product ID '{product_id_to_check}'.")
+                tests_passed += 1
 
-        print("SQL TESTS COMPLETED.")
+                cursor.execute("SELECT Stock FROM Products WHERE ProductID = %s", (product_id_to_check,))
+                result = cursor.fetchone()
+                final_stock = result[0]
+                expected_stock = initial_stock - 1  # 1 Hardcoded here since its was the test did
+                print(f"Expected stock: {expected_stock}, Initial stock: {initial_stock}")
+                self.assertEqual(final_stock, expected_stock, "Stock not reduced correctly after purchase.")
+                print(f"Test Passed: Stock reduced correctly after purchase for product ID '{product_id_to_check}'.")
+                tests_passed += 1
+
+        print(f"SQL TESTS COMPLETED. {tests_passed}/5 tests passed.")
 
         # TEST SQL
 

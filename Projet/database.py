@@ -59,12 +59,27 @@ def get_all_products():
         return []
 
 
-def get_product_by_id(product_id):
-    connection = get_db_connection()
-    with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-        cursor.execute("SELECT * FROM Products WHERE ProductID = %s", (product_id,))
-        product = cursor.fetchone()
-    return product
+def get_product_by_id(product_id, conn=None):
+    own_connection = False
+
+    if conn is None:
+        conn = get_db_connection()
+        own_connection = True
+
+    try:
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("SELECT * FROM Products WHERE ProductID = %s", (product_id,))
+            product = cursor.fetchone()
+
+        if own_connection:
+            conn.close()
+
+        return product
+    except Exception as e:
+        print(f"An error occurred while fetching product by ID: {e}")
+        if own_connection and conn:
+            conn.close()
+        return None
 
 
 def get_reviews_by_product_id(product_id):
@@ -162,82 +177,224 @@ def remove_item_from_cart(username, product_id):
         conn.close()
 
 
-def create_order(username):
-    conn = get_db_connection()
+def create_order(username, delivery_address, total, conn=None):
+    own_connection = False
+    if conn is None:
+        conn = get_db_connection()
+        own_connection = True
     try:
         with conn.cursor() as cursor:
             sql = """
-            INSERT INTO Commands (Username, DateCommand, Status)
-            VALUES (%s, NOW(), 'Pending')
+            INSERT INTO Commands (Username, DeliveryAddress, Total, DateCommand, Status) 
+            VALUES (%s, %s, %s, NOW(), 'Pending')
             """
-            cursor.execute(sql, (username,))
-            order_id = cursor.lastrowid
-        conn.commit()
+            cursor.execute(sql, (username, delivery_address, total))
+            order_id = conn.insert_id()
+        if own_connection:
+            conn.commit()
         return order_id
     except Exception as e:
-        print(f"An error occurred while creating the order: {e}")
-        conn.rollback()
-        return None
+        if own_connection:
+            conn.rollback()
+        raise e
     finally:
-        conn.close()
+        if own_connection:
+            conn.close()
 
 
-def add_order_item(order_id, product_id, quantity, price):
-    conn = get_db_connection()
+def add_order_item(order_id, product_id, quantity, price, conn=None):
+    own_connection = False
+    if conn is None:
+        conn = get_db_connection()
+        own_connection = True
     try:
         with conn.cursor() as cursor:
             sql = """
-            INSERT INTO OrderItems (OrderID, ProductID, Quantite, PrixUnitaire)
-            VALUES (%s, %s, %s, %s)
-            """
+                INSERT INTO OrderItems (OrderID, ProductID, Quantity, UnitPrice)
+                VALUES (%s, %s, %s, %s)
+                """
             cursor.execute(sql, (order_id, product_id, quantity, price))
-        conn.commit()
+        if own_connection:
+            conn.commit()
     except Exception as e:
+        if own_connection:
+            conn.rollback()
         print(f"An error occurred while adding an order item: {e}")
-        conn.rollback()
     finally:
-        conn.close()
+        if own_connection:
+            conn.close()
 
 
-def update_product_quantity(product_id, quantity_change):
-    conn = get_db_connection()
+def update_product_quantity(product_id, quantity_change, conn=None):
+    own_connection = False
+    if conn is None:
+        conn = get_db_connection()
+        own_connection = True
     try:
         with conn.cursor() as cursor:
             cursor.execute("SELECT Stock FROM Products WHERE ProductID = %s", (product_id,))
             current_stock = cursor.fetchone()[0]
+            new_stock = current_stock + quantity_change
 
-            if current_stock + quantity_change < 0:
-                print("Attempted to reduce stock below zero. Operation cancelled.")
-                return False
+            if new_stock < 0:
+                raise Exception(f"Insufficient stock for product ID {product_id}.")
 
-            sql = """
-            UPDATE Products 
-            SET Stock = Stock + %s 
-            WHERE ProductID = %s
-            """
-            cursor.execute(sql, (quantity_change, product_id))
+            cursor.execute("""
+                UPDATE Products 
+                SET Stock = %s 
+                WHERE ProductID = %s
+                """, (new_stock, product_id))
+        if own_connection:
             conn.commit()
-            return True
+        return True
     except Exception as e:
+        if own_connection:
+            conn.rollback()
         print(f"An error occurred while updating product quantity: {e}")
-        conn.rollback()
         return False
     finally:
-        conn.close()
+        if own_connection:
+            conn.close()
 
 
-def clear_cart(username):
-    conn = get_db_connection()
+def clear_cart(username, conn=None):
+    own_connection = False
+    if conn is None:
+        conn = get_db_connection()
+        own_connection = True
     try:
         with conn.cursor() as cursor:
             sql = "DELETE FROM CartItems WHERE Username = %s"
             cursor.execute(sql, (username,))
-        conn.commit()
+        if own_connection:
+            conn.commit()
     except Exception as e:
+        if own_connection:
+            conn.rollback()
         print(f"An error occurred while clearing the cart: {e}")
-        conn.rollback()
     finally:
-        conn.close()
+        if own_connection:
+            conn.close()
 
+
+
+# order list -------------------------------------------------
+def get_orders(username):
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+                cursor.execute("SELECT * FROM Commands WHERE Username = %s", (username,))
+                return cursor.fetchall()
+    except Exception as e:
+        print(e)
+        return []
+
+
+def get_order_items(order_id):
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+                sql_query = """
+                    SELECT o.*, p.Name 
+                    FROM OrderItems o 
+                    JOIN Products p ON o.ProductID = p.ProductID
+                    WHERE o.OrderID = %s
+                """
+                cursor.execute(sql_query, (order_id,))
+                results = cursor.fetchall()
+                return results
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+
+
+def get_total_sales_by_category():
+    query = """
+    SELECT c.Name AS CategoryName, SUM(o.Quantity * o.UnitPrice) AS TotalSales
+    FROM OrderItems o
+    JOIN Products p ON o.ProductID = p.ProductID
+    JOIN Categories c ON p.CategorieID = c.CategorieID
+    GROUP BY c.CategorieID
+    ORDER BY TotalSales DESC;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
+
+def get_never_ordered_products():
+    query = """
+    SELECT *
+    FROM Products
+    WHERE ProductID NOT IN (SELECT DISTINCT ProductID FROM OrderItems);
+    """
+    with get_db_connection() as connection:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
+
+def get_most_popular_product():
+    query = """
+    SELECT p.Name, SUM(oi.Quantity) AS TotalQuantity
+    FROM Products p
+    JOIN OrderItems oi ON p.ProductID = oi.ProductID
+    GROUP BY p.ProductID
+    ORDER BY TotalQuantity DESC
+    LIMIT 1;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            result = cursor.fetchone()
+    return result
+
+
+def get_highest_spending_customer():
+    query = """
+    SELECT u.Name, SUM(oi.Quantity * oi.UnitPrice) AS TotalSpent
+    FROM Users u
+    JOIN Commands c ON u.Username = c.Username
+    JOIN OrderItems oi ON c.OrderID = oi.OrderID
+    GROUP BY u.Username
+    ORDER BY TotalSpent DESC
+    LIMIT 1;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            result = cursor.fetchone()
+    return result
+
+
+def get_average_rating_per_category():
+    query = """
+    SELECT cat.Name AS CategoryName, AVG(pr.Note) AS AverageRating
+    FROM Categories cat
+    JOIN Products p ON cat.CategorieID = p.CategorieID
+    JOIN ProductReviews pr ON p.ProductID = pr.ProductID
+    GROUP BY cat.CategorieID
+    ORDER BY AverageRating DESC;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            results = cursor.fetchall()
+    return results
+
+
+def get_percentage_never_sold():
+    query = """
+    SELECT ROUND((COUNT(DISTINCT p.ProductID) / (SELECT COUNT(*) FROM Products) * 100), 2) AS PercentageNeverSold
+    FROM Products p
+    LEFT JOIN OrderItems oi ON p.ProductID = oi.ProductID
+    WHERE oi.ProductID IS NULL;
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            result = cursor.fetchone()
+    return result
 
 

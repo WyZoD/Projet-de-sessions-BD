@@ -9,10 +9,12 @@
 {% block content %}
 <h1>Your Cart</h1>
 {% if cart_items %}
+    {% set total = 0 %}
     {% for item in cart_items %}
     <div class="cart-item">
         <h2>{{ item.Name }}</h2>
         <p>Price: ${{ item.Price }}</p>
+        <p>Quantity: {{ item.Quantity }}</p>
         <form action="{{ url_for('update_quantity', product_id=item.ProductID) }}" method="post">
             <input type="number" name="quantity" value="{{ item.Quantity }}" min="1">
             <button type="submit">Update</button>
@@ -22,7 +24,12 @@
         </form>
     </div>
     {% endfor %}
-        <form action="{{ url_for('place_order') }}" method="post">
+    <form action="{{ url_for('place_order') }}" method="post">
+        <div class="form-group">
+            <label for="deliveryAddress">Delivery Address:</label>
+            <input type="text" id="deliveryAddress" name="delivery_address" required>
+        </div>
+        <input type="hidden" name="total" value="{{ total }}">
         <button type="submit" class="button">Place Order</button>
     </form>
 {% else %}

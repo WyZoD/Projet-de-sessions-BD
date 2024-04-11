@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Fun Facts{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='fun_fact.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2>Today's Fun Facts</h2>
+    <ul id="fun-facts">
+        {% for fact in fun_facts %}
+            <li>{{ fact }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

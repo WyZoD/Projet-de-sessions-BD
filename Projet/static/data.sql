@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS Categories;
 DROP TABLE IF EXISTS Users;
 
 
+
 CREATE TABLE Users (
     Username varchar(40) PRIMARY KEY,
     Name VARCHAR(40),
@@ -55,8 +56,8 @@ CREATE TABLE OrderItems (
     OrderItemID INT AUTO_INCREMENT PRIMARY KEY,
     OrderID INT,
     ProductID INT,
-    Quantite INT,
-    PrixUnitaire DECIMAL(10, 2),
+    Quantity INT,
+    UnitPrice DECIMAL(10, 2),
     FOREIGN KEY (OrderID) REFERENCES Commands(OrderID),
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
 );
@@ -312,7 +313,7 @@ INSERT INTO Commands (Username, DateCommand, Status, DeliveryAddress, Total) VAL
 ("marieismygirl", NOW(), 'Shipped', '1617 Boulevard de lAmour, Nantes', 75.00);
 
 
-INSERT INTO OrderItems (OrderID, ProductID, Quantite, PrixUnitaire) VALUES
+INSERT INTO OrderItems (OrderID, ProductID, Quantity, UnitPrice)VALUES
 (1, 1, 3, 19.99),
 (2, 2, 1, 39.99),
 (3, 3, 2, 29.99),
@@ -331,10 +332,15 @@ INSERT INTO ProductReviews (ProductID, Username, Note, Commentaire, Date) VALUES
 (12, "marieismygirl", 3, 'Scarf is pretty but thinner than I thought.', NOW());
 
 
-SELECT * FROM Users
-SELECT * FROM CartItems
-SELECT * FROM Products
-SELECT * FROM OrderItems
-
+CREATE INDEX idx_username ON Users (Username);
+CREATE INDEX idx_product_id ON Products (ProductID);
+CREATE INDEX idx_product_id ON ProductReviews (ProductID);
+CREATE INDEX idx_username ON ProductReviews (Username);
+CREATE INDEX idx_category_id ON Categories (CategorieID);
+CREATE INDEX idx_order_id ON OrderItems (OrderID);
+CREATE INDEX idx_product_id ON OrderItems (ProductID);
+CREATE INDEX idx_username ON CartItems (Username);
+CREATE INDEX idx_product_id ON CartItems (ProductID);
+CREATE INDEX idx_username ON Commands (Username);
 
 

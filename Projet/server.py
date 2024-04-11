@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, session, g, abort
+import random
+from flask import Flask, render_template, request, flash, redirect, url_for, session, g, jsonify, abort
 from werkzeug.security import check_password_hash
 import bcrypt
 
@@ -6,7 +7,7 @@ from database import *
 
 app = Flask(__name__)
 app.config['TESTING'] = True
-app.secret_key = 'dsadsadasdasdasdasdas'
+app.secret_key = 'mega_secret_key'
 
 
 @app.route("/")
@@ -162,27 +163,101 @@ def remove_from_cart(product_id):
 @app.route("/place-order/", methods=["POST"])
 def place_order():
     if 'username' not in session:
+        flash("You need to be logged in to place an order.", "error")
         return redirect(url_for('login'))
 
     username = session['username']
-    cart_items = get_cart_items(username)
+    delivery_address = request.form.get('delivery_address')  # Assuming delivery address comes from the form
 
-    if not cart_items:
-        flash("Your cart is empty.")
-        return redirect(url_for('show_cart'))
+    conn = get_db_connection()
+    try:
+        conn.begin()
+        cart_items = get_cart_items(username)
 
-    order_id = create_order(username)
+        total = sum(item['Price'] * item['Quantity'] for item in cart_items)
 
-    for item in cart_items:
-        success = update_product_quantity(item['ProductID'], -item['Quantity'])
-        if not success:
-            flash(f"Could not place order for {item['Name']} due to insufficient stock.")
-            return redirect(url_for('show_cart'))
-        add_order_item(order_id, item['ProductID'], item['Quantity'], item['Price'])
+        if not cart_items:
+            raise Exception("Your cart is empty.")
 
-    clear_cart(username)  #
-    flash("Your order has been placed.")
-    return redirect(url_for('show_cart'))
+        for item in cart_items:
+            product = get_product_by_id(item['ProductID'],conn)
+            if item['Quantity'] > product['Stock']:
+                raise Exception(f"Insufficient stock for product ID {item['ProductID']}.")
+
+        order_id = create_order(username, delivery_address, total, conn)
+
+        for item in cart_items:
+            update_product_quantity(item['ProductID'], -item['Quantity'], conn)
+            add_order_item(order_id, item['ProductID'], item['Quantity'], item['Price'], conn)
+        clear_cart(username, conn)
+        conn.commit()
+        flash("Your order has been placed successfully.")
+    except Exception as e:
+        conn.rollback()
+        flash(f"An error occurred: {e}")
+    finally:
+        conn.close()
+    return redirect(url_for('show_orders'))
+
+
+
+@app.route("/orders/")
+def show_orders():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+    orders = get_orders(username)
+
+    for order in orders:
+        order_id = order['OrderID']
+        order['items'] = get_order_items(order_id)
+
+    logged_in = 'username' in session
+    return render_template('orders.html', orders=orders, logged_in=logged_in, username=username)
+
+
+@app.route("/fun-fact/")
+def fun_fact():
+    if 'username' not in session:
+        flash("You need to be logged in to view fun facts.", "warning")
+        return redirect(url_for('login'))
+
+    most_popular_product = get_most_popular_product()
+    highest_spending_customer = get_highest_spending_customer()
+    average_rating_per_category = get_average_rating_per_category()
+    percentage_never_sold = get_percentage_never_sold()
+    sales_facts = get_total_sales_by_category()
+    never_ordered_products = get_never_ordered_products()
+
+    fun_facts = []
+
+    if sales_facts:
+        for fact in sales_facts:
+            fun_facts.append(
+                f"Category {fact['CategoryName']} has total sales of ${fact['TotalSales']:.2f}!")
+
+    if never_ordered_products:
+        product_count = len(never_ordered_products)
+        fun_facts.append(f"Did you know? We have {product_count} products that have never been ordered!")
+
+    if most_popular_product:
+        fun_facts.append(f"The most popular product is {most_popular_product[0]} with {most_popular_product[1]} units sold.")
+
+    if highest_spending_customer:
+        fun_facts.append(f"Our highest spending customer is {highest_spending_customer[0]}, spending a total of ${highest_spending_customer[1]:.2f}.")
+
+    if average_rating_per_category:
+        for category in average_rating_per_category:
+            fun_facts.append(f"Category {category[0]} has an average product rating of {category[1]:.2f} stars.")
+
+    if percentage_never_sold:
+        fun_facts.append(f"{percentage_never_sold[0]}% of our products have never been sold.")
+
+    if not fun_facts:
+        fun_facts.append("Our website is growing every day. Check back soon for more interesting facts!")
+
+    return render_template("fun_fact.html", fun_facts=fun_facts)
 
 
 @app.route('/shutdown', methods=['POST'])

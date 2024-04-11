@@ -1,17 +1,9 @@
-import os
 import unittest
-from threading import Thread
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from Projet.database import get_db_connection
 from server import app
-from werkzeug.serving import make_server
 
 
-class TestHelloWorld(unittest.TestCase):
+class TestConnectionEndpointWorld(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         self.client = app.test_client()

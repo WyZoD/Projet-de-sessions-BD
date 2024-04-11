@@ -1,5 +1,3 @@
-import time
-import unittest
 import os
 import unittest
 from threading import Thread
@@ -8,10 +6,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
-
 from Projet.database import get_db_connection
 from server import app
 from werkzeug.serving import make_server
+
 
 class TestUserSignup(unittest.TestCase):
     ## Start the server
@@ -26,7 +24,6 @@ class TestUserSignup(unittest.TestCase):
 
     def setUp(self):
         chrome_options = Options()
-
         self.client = app.test_client()
         self.driver = webdriver.Chrome(options=chrome_options)
         self.base_url = "http://127.0.0.1:5000"
@@ -49,10 +46,10 @@ class TestUserSignup(unittest.TestCase):
 
         # Check if the current URL is the login page
         current_url = self.driver.current_url
-        self.assertIn("/login/", current_url, "Not redirected to login page after attempting to add to cart without logging in.")
+        self.assertIn("/login/", current_url,
+                      "Not redirected to login page after attempting to add to cart without logging in.")
 
     def test_entire_process(self):
-
         # Signup
         self.driver.get(f"{self.base_url}/signup")
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.NAME, "username"))).send_keys(
@@ -85,7 +82,7 @@ class TestUserSignup(unittest.TestCase):
         current_url = self.driver.current_url
 
         # SQL TEST
-        product_id_to_check = 1  # Assuming the product ID is known and fixed for this test
+        product_id_to_check = 1
 
         # Step 1: Retrieve the initial stock value for the product
         initial_stock = None
@@ -93,8 +90,7 @@ class TestUserSignup(unittest.TestCase):
             with conn.cursor() as cursor:
                 cursor.execute("SELECT Stock FROM Products WHERE ProductID = %s", (product_id_to_check,))
                 result = cursor.fetchone()
-                initial_stock = result[0]  # Accessing the first item in the tuple
-
+                initial_stock = result[0]
 
         # Assert that the URL contains the word "product"
         self.assertIn("product", current_url, "URL does not contain 'product'.")
@@ -153,12 +149,9 @@ class TestUserSignup(unittest.TestCase):
 
         # SQL TEST
         final_stock = None
-
-        print("SQL TESTS STARTING...")
-
-        # Initialize a counter for passed tests
         tests_passed = 0
 
+        print("SQL TESTS STARTING...")
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
                 # Check if the user was created in the database
@@ -229,7 +222,6 @@ class TestUserSignup(unittest.TestCase):
         # Connect to the database
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
-
                 # Delete any OrderItems for the test user by joining on Commands (Orders) table
                 delete_order_items_sql = """
                 DELETE OrderItems
@@ -259,8 +251,6 @@ class TestUserSignup(unittest.TestCase):
             conn.commit()
 
         super().tearDown()
-
-
 
 
 if __name__ == '__main__':

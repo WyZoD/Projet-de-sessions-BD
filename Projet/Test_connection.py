@@ -1,6 +1,6 @@
 import unittest
 from Projet.database import get_db_connection
-from server import app
+from Projet.server import app
 
 
 class TestConnectionEndpointWorld(unittest.TestCase):
@@ -55,7 +55,6 @@ class TestUserSignup(unittest.TestCase):
         self.created_usernames = []
 
     def test_signup_with_duplicate_username(self):
-
         user1_data = {
             'username': 'uniqueuser',
             'password': self.common_password,
@@ -112,6 +111,7 @@ class TestUserSignup(unittest.TestCase):
 
         # Cleanup
         self.cleanup_users([user1_data['email'], user2_data['email']])
+
     def tearDown(self):
         self.cleanup_users(self.created_usernames)
 
@@ -126,4 +126,4 @@ class TestUserSignup(unittest.TestCase):
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-    # unittest.main()
+    unittest.main()

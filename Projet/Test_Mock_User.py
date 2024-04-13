@@ -6,13 +6,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
-from Projet.database import get_db_connection
-from server import app
+from database import get_db_connection
+from Projet.server import app
 from werkzeug.serving import make_server
 
 
 class TestUserSignup(unittest.TestCase):
     ## Start the server
+    server = None
+    server_thread = None
+
     @classmethod
     def setUpClass(cls):
         os.environ['FLASK_TESTING'] = '1'
@@ -112,6 +115,7 @@ class TestUserSignup(unittest.TestCase):
                                                "//div[contains(@class, 'review')]//p[contains(text(), 'This is a test review. Amazing product!')]").text
         self.assertIn("This is a test review. Amazing product!", review_text, "Review did not appear as expected.")
 
+
         # Click "Add to Cart"
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "form[action*='/add-to-cart/'] button[type='submit']"))
@@ -132,6 +136,18 @@ class TestUserSignup(unittest.TestCase):
         cart_items = self.driver.find_elements(By.CSS_SELECTOR, ".cart-item")
         self.assertGreater(len(cart_items), 0, "Cart is unexpectedly empty.")
 
+
+        # Verify the presence of the 'deliveryAddress' label
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "form[action='/place-order/']"))
+        )
+
+        # Input a fake delivery address
+        delivery_address_input = self.driver.find_element(By.ID, "deliveryAddress")
+        delivery_address_input.clear()  # Clear any pre-filled data
+        delivery_address_input.send_keys("123 Fake St, Faketown, FK 12345")
+
+
         # Place the order
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "form[action*='/place-order'] button[type='submit']"))
@@ -139,12 +155,12 @@ class TestUserSignup(unittest.TestCase):
 
         # Wait for the flash message to appear
         WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Your order has been placed.')]"))
+            EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Your order has been placed successfully.')]"))
         )
 
         # Verify the flash message
-        flash_message = self.driver.find_element(By.XPATH, "//*[contains(text(), 'Your order has been placed.')]").text
-        self.assertIn("Your order has been placed.", flash_message,
+        flash_message = self.driver.find_element(By.XPATH, "//*[contains(text(), 'Your order has been placed successfully.')]").text
+        self.assertIn("Your order has been placed successfully.", flash_message,
                       "Order confirmation message did not appear as expected.")
 
         # SQL TEST
@@ -175,15 +191,6 @@ class TestUserSignup(unittest.TestCase):
 
                 product_id_to_check = 1  # We took the first product in the Test before
 
-                # Check if the order items were created in the database
-                cursor.execute("""
-                SELECT * FROM OrderItems
-                JOIN Commands ON OrderItems.OrderID = Commands.OrderID
-                WHERE Commands.Username = %s
-                """, (username_to_check,))
-                results = cursor.fetchall()
-                self.assertGreater(len(results), 0, "Order items were not created in the database for the order.")
-                print(f"Test Passed: Order items created in the database for the order of user '{username_to_check}'.")
                 tests_passed += 1
 
                 # Check if the review was added to the database

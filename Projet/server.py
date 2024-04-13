@@ -1,6 +1,5 @@
 import random
-
-from flask import Flask, render_template, request, flash, redirect, url_for, session, g, jsonify
+from flask import Flask, render_template, request, flash, redirect, url_for, session, g, jsonify, abort
 from werkzeug.security import check_password_hash
 import bcrypt
 
@@ -57,7 +56,8 @@ def product_page(product_id):
     product = get_product_by_id(product_id)
     reviews = get_reviews_by_product_id(product_id)
     logged_in = 'username' in session
-    return render_template('product_page.html', product=product, reviews=reviews, logged_in=logged_in, username=session.get('username'))
+    return render_template('product_page.html', product=product, reviews=reviews, logged_in=logged_in,
+                           username=session.get('username'))
 
 
 @app.route("/add-review/<int:product_id>/", methods=["POST"])
@@ -121,7 +121,6 @@ def show_cart():
     cart_items = get_cart_items(username)
     logged_in = 'username' in session
     return render_template('cart.html', cart_items=cart_items, logged_in=logged_in, username=username)
-
 
 
 @app.route("/logout/")
@@ -261,7 +260,17 @@ def fun_fact():
     return render_template("fun_fact.html", fun_facts=fun_facts)
 
 
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    if not app.config['TESTING']:
+        # Prevent using this route in non-testing environments
+        abort(404)
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+    return 'Server is shutting down...'
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run() # DO NOT PUT DEBUG=TRUE

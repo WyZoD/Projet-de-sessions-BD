@@ -95,7 +95,7 @@
       <recent name="D:\Github\Projet-de-sessions-BD\Projet" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python tests.Python tests for Test_Mock_User.TestUserSignup">
     <configuration name="Projet-de-sessions-BD" type="Python.FlaskServer">
       <module name="Projet-de-sessions-BD" />
       <option name="target" value="$PROJECT_DIR$/Projet/server.py" />
@@ -240,19 +240,36 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for Test_Mock_User.TestUserSignup" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Projet-de-sessions-BD" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Projet" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;Test_Mock_User.TestUserSignup&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Flask server.Projet-de-sessions-BD" />
       <item itemvalue="Python tests.Python tests for Projet.Test_Mock_User.TestUserSignup" />
       <item itemvalue="Python tests.Python tests for Projet.Test_connection.TestConnectionEndpointWorld" />
+      <item itemvalue="Python tests.Python tests for Test_Mock_User.TestUserSignup" />
       <item itemvalue="Python tests.Python tests for Projet.Tests.Test_Mock_User.TestUserSignup" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for Test_Mock_User.TestUserSignup" />
         <item itemvalue="Python tests.Python tests for Projet.Test_Mock_User.TestUserSignup" />
         <item itemvalue="Python tests.Python tests for Projet.Test_connection.TestConnectionEndpointWorld" />
         <item itemvalue="Python tests.Python tests for Projet.Test_Mock_User.TestUserSignup" />
         <item itemvalue="Python tests.Python tests for Projet.Test_Mock_User.TestUserSignup" />
-        <item itemvalue="Python tests.Python tests for Projet.Tests.Test_Mock_User.TestUserSignup" />
       </list>
     </recent_temporary>
   </component>

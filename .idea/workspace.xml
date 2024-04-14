@@ -5,7 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d27babc-e20d-4611-bef9-2e36e48db4c3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/227b68dd-9ac1-44fd-8512-1013fa6c412f.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/227b68dd-9ac1-44fd-8512-1013fa6c412f.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Projet/Test_Mock_User.py" beforeDir="false" afterPath="$PROJECT_DIR$/Projet/Test_Mock_User.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Projet/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/Projet/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Projet/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Projet/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Projet/static/data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Projet/static/data.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +73,7 @@
     "Python tests.Python tests in Test_connection.py.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Test-for-front-end,-middle-ware-and-back-end",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "D:/Github/Projet-de-sessions-BD/Projet",
     "node.js.detected.package.eslint": "true",
@@ -94,7 +100,7 @@
       <recent name="D:\Github\Projet-de-sessions-BD\Projet" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for Test_Mock_User.TestUserSignup.test_entire_process">
+  <component name="RunManager" selected="Python tests.Python tests for Test_Mock_User.TestUserSignup">
     <configuration name="Projet-de-sessions-BD" type="Python.FlaskServer">
       <module name="Projet-de-sessions-BD" />
       <option name="target" value="$PROJECT_DIR$/Projet/server.py" />
@@ -281,9 +287,9 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for Test_Mock_User.TestUserSignup.test_entire_process" />
-        <item itemvalue="Python tests.Python tests for Test_connection.TestConnectionEndpointWorld" />
         <item itemvalue="Python tests.Python tests for Test_Mock_User.TestUserSignup" />
+        <item itemvalue="Python tests.Python tests for Test_connection.TestConnectionEndpointWorld" />
+        <item itemvalue="Python tests.Python tests for Test_Mock_User.TestUserSignup.test_entire_process" />
         <item itemvalue="Python tests.Python tests for Projet.Test_Mock_User.TestUserSignup" />
         <item itemvalue="Python tests.Python tests for Projet.Test_connection.TestConnectionEndpointWorld" />
       </list>
@@ -315,7 +321,7 @@
       <workItem from="1712847749348" duration="774000" />
       <workItem from="1712848567472" duration="863000" />
       <workItem from="1712849444324" duration="3706000" />
-      <workItem from="1713032986934" duration="3384000" />
+      <workItem from="1713032986934" duration="8125000" />
     </task>
     <servers />
   </component>
@@ -350,7 +356,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Projet_de_sessions_BD$.coverage" NAME=" Coverage Results" MODIFIED="1713040091476" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Projet" />
+    <SUITE FILE_PATH="coverage/Projet_de_sessions_BD$.coverage" NAME=" Coverage Results" MODIFIED="1713056152673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Projet" />
     <SUITE FILE_PATH="coverage/Projet_de_sessions_BD$Projet_de_sessions_BD.coverage" NAME="Projet-de-sessions-BD Coverage Results" MODIFIED="1713033152564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

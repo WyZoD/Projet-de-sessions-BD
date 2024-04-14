@@ -62,7 +62,7 @@ class TestUserSignup(unittest.TestCase):
         self.driver.find_element(By.NAME, "password").send_keys("testpassword")
         self.driver.find_element(By.NAME, "address").send_keys("123 Test St")
         self.driver.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-        WebDriverWait(self.driver, 10).until(EC.url_contains("/login"))
+        WebDriverWait(self.driver, 10).until(EC.url_contains("/login/"))
         self.assertTrue(self.driver.current_url.endswith("/login/"),
                         "User should be redirected to login page after signup.")
 

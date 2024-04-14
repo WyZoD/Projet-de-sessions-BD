@@ -187,8 +187,8 @@ INSERT INTO Users (Username,Name, Email, Password, Address, InscriptionDate) VAL
 
 
 INSERT INTO Categories (Name, Description) VALUES
-('Men', 'Clothing for men'),
-('Women', 'Clothing for women'),
+('Men', 'Masculine-style clothing'),
+('Women', 'Feminine-style clothing'),
 ('Kids', 'Clothing for children'),
 ('Accessories', 'Accessories for everyone'),
 ('Unisex', 'Clothing for everyone');

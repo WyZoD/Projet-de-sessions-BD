@@ -2,6 +2,7 @@ import random
 from flask import Flask, render_template, request, flash, redirect, url_for, session, g, jsonify, abort
 from werkzeug.security import check_password_hash
 import bcrypt
+import re
 
 from database import *
 
@@ -9,6 +10,16 @@ app = Flask(__name__)
 app.config['TESTING'] = True
 app.secret_key = 'mega_secret_key'
 
+
+def validate_email(email):
+    pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    return re.match(pattern, email) is not None
+
+def validate_username(username):
+    return username.isalnum() and 5 <= len(username) <= 20
+
+def validate_input(data, max_length):
+    return len(data) <= max_length
 
 @app.route("/")
 def index():
@@ -41,11 +52,21 @@ def add_signup():
     name = request.form["name"]
     address = request.form["address"]
 
-    if add_user(username, password, email, name, address):
+    if not validate_email(email):
+        flash("Invalid email format.")
+        return redirect(url_for('signup'))
+
+    if not validate_username(username):
+        flash("Username must be alphanumeric and between 5 to 20 characters long.")
+        return redirect(url_for('signup'))
+
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    if add_user(username, hashed_password, email, name, address):
         return redirect(url_for('login'))
     else:
         flash("User not added, this username or email address is already in use")
         return redirect(url_for('signup'))
+
 
 
 from flask import session

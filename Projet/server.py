@@ -3,7 +3,6 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from werkzeug.security import check_password_hash
 import bcrypt
 import re
-
 from database import *
 
 app = Flask(__name__)
@@ -15,11 +14,18 @@ def validate_email(email):
     pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
     return re.match(pattern, email) is not None
 
-def validate_username(username):
-    return username.isalnum() and 5 <= len(username) <= 20
 
-def validate_input(data, max_length):
-    return len(data) <= max_length
+def validate_username(username):
+    return username.isalnum() and 5 <= len(username) <= 40
+
+
+def validate_input(input_str, min_length=None, max_length=None):
+    """Validate the length of an input string."""
+    if min_length is not None and len(input_str) < min_length:
+        return False
+    if max_length is not None and len(input_str) > max_length:
+        return False
+    return True
 
 @app.route("/")
 def index():
@@ -46,18 +52,26 @@ def signup():
 
 @app.route("/addSignup/", methods=["POST"])
 def add_signup():
-    username = request.form["username"]
-    password = request.form["password"]
-    email = request.form["email"]
-    name = request.form["name"]
-    address = request.form["address"]
+    username = request.form.get("username", type=str)
+    password = request.form.get("password", type=str)
+    email = request.form.get("email", type=str)
+    name = request.form.get("name", type=str)
+    address = request.form.get("address", type=str)
 
     if not validate_email(email):
         flash("Invalid email format.")
         return redirect(url_for('signup'))
 
+    if not validate_input(password, max_length=40):
+        flash("Password too long; 40 is the max length.")
+        return redirect(url_for('signup'))
+
+    if not validate_input(address, min_length=6, max_length=254):
+        flash("Address must be between 6 and 254 characters long.")
+        return redirect(url_for('signup'))
+
     if not validate_username(username):
-        flash("Username must be alphanumeric and between 5 to 20 characters long.")
+        flash("Username must be alphanumeric and between 5 to 40 characters long.")
         return redirect(url_for('signup'))
 
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -68,8 +82,6 @@ def add_signup():
         return redirect(url_for('signup'))
 
 
-
-from flask import session
 
 
 @app.route("/product/<int:product_id>/")
@@ -105,6 +117,7 @@ def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"].encode('utf-8')
+
         user = get_user_by_email(email)
 
         if user and bcrypt.checkpw(password, user['Password'].encode('utf-8')):
@@ -201,7 +214,7 @@ def place_order():
             raise Exception("Your cart is empty.")
 
         for item in cart_items:
-            product = get_product_by_id(item['ProductID'],conn)
+            product = get_product_by_id(item['ProductID'], conn)
             if item['Quantity'] > product['Stock']:
                 raise Exception(f"Insufficient stock for product ID {item['ProductID']}.")
 
@@ -219,7 +232,6 @@ def place_order():
     finally:
         conn.close()
     return redirect(url_for('show_orders'))
-
 
 
 @app.route("/orders/")
@@ -263,10 +275,12 @@ def fun_fact():
         fun_facts.append(f"Did you know? We have {product_count} products that have never been ordered!")
 
     if most_popular_product:
-        fun_facts.append(f"The most popular product is {most_popular_product[0]} with {most_popular_product[1]} units sold.")
+        fun_facts.append(
+            f"The most popular product is {most_popular_product[0]} with {most_popular_product[1]} units sold.")
 
     if highest_spending_customer:
-        fun_facts.append(f"Our highest spending customer is {highest_spending_customer[0]}, spending a total of ${highest_spending_customer[1]:.2f}.")
+        fun_facts.append(
+            f"Our highest spending customer is {highest_spending_customer[0]}, spending a total of ${highest_spending_customer[1]:.2f}.")
 
     if average_rating_per_category:
         for category in average_rating_per_category:
@@ -294,4 +308,4 @@ def shutdown():
 
 
 if __name__ == '__main__':
-    app.run() # DO NOT PUT DEBUG=TRUE
+    app.run()  # DO NOT PUT DEBUG=TRUE

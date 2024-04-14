@@ -138,3 +138,5 @@ END //
 
 DELIMITER ;
 
+/* Trigger to send completion notification when order status changes to 'Completed' */
+/* Note: SendCompletionNotification is a hypothetical function that would send a notification to the user */

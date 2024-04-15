@@ -1,4 +1,5 @@
 import pymysql
+from flask import logging
 from flask.cli import load_dotenv
 import os
 import pymysql.cursors
@@ -226,26 +227,37 @@ def update_product_quantity(product_id, quantity_change, conn=None):
     if conn is None:
         conn = get_db_connection()
         own_connection = True
+
     try:
         with conn.cursor() as cursor:
+            # Check current stock
             cursor.execute("SELECT Stock FROM Products WHERE ProductID = %s", (product_id,))
-            current_stock = cursor.fetchone()[0]
+            result = cursor.fetchone()
+            if result is None:
+                raise ValueError(f"No product found with ProductID {product_id}")
+
+            current_stock = result[0]
             new_stock = current_stock + quantity_change
 
+            # Ensure the new stock level is not negative
             if new_stock < 0:
-                raise Exception(f"Insufficient stock for product ID {product_id}.")
+                raise ValueError(
+                    f"Insufficient stock for product ID {product_id}. Current stock: {current_stock}, attempted change: {quantity_change}")
 
+            # Update the stock in the database
             cursor.execute("""
                 UPDATE Products 
                 SET Stock = %s 
                 WHERE ProductID = %s
-                """, (new_stock, product_id))
+            """, (new_stock, product_id))
+
         if own_connection:
             conn.commit()
         return True
-    except Exception as e:
+    except (pymysql.MySQLError, ValueError) as e:
         if own_connection:
             conn.rollback()
+        # Consider using logging instead of print for production code
         print(f"An error occurred while updating product quantity: {e}")
         return False
     finally:

@@ -15,19 +15,6 @@ def validate_email(email):
     return re.match(pattern, email) is not None
 
 
-def validate_username(username):
-    return username.isalnum() and 5 <= len(username) <= 40
-
-
-def validate_input(input_str, min_length=None, max_length=None):
-    """Validate the length of an input string."""
-    if min_length is not None and len(input_str) < min_length:
-        return False
-    if max_length is not None and len(input_str) > max_length:
-        return False
-    return True
-
-
 @app.route("/")
 def index():
     if 'username' in session:
@@ -58,22 +45,6 @@ def add_signup():
     email = request.form.get("email", type=str)
     name = request.form.get("name", type=str)
     address = request.form.get("address", type=str)
-
-    if not validate_email(email):
-        flash("Invalid email format.")
-        return redirect(url_for('signup'))
-
-    if not validate_input(password, max_length=40):
-        flash("Password too long; 40 is the max length.")
-        return redirect(url_for('signup'))
-
-    if not validate_input(address, min_length=6, max_length=254):
-        flash("Address must be between 6 and 254 characters long.")
-        return redirect(url_for('signup'))
-
-    if not validate_username(username):
-        flash("Username must be alphanumeric and between 5 to 40 characters long.")
-        return redirect(url_for('signup'))
 
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     if add_user(username, hashed_password, email, name, address):
@@ -293,7 +264,7 @@ def fun_fact():
 
     return render_template("fun_fact.html", fun_facts=fun_facts)
 
-
+# this work only in testing environment
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
     if not app.config['TESTING']:

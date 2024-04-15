@@ -76,7 +76,6 @@ class TestUserSignup(unittest.TestCase):
         response = self.app.post(self.base_url, data=user1_data)
         self.assertTrue('/login/' in response.headers['Location'], "User 1 should be successfully created.")
         response = self.app.post(self.base_url, data=user2_data)
-        # Check not in login page /todo should check if the banner is there waiting for the merge/pr
         self.assertNotIn('/login/', response.headers.get('Location', ''),
                          "Duplicate username should not be allowed.")
 
@@ -105,7 +104,6 @@ class TestUserSignup(unittest.TestCase):
         response = self.app.post(self.base_url, data=user1_data)
         self.assertTrue('/login/' in response.headers['Location'], "User 1 should be successfully created.")
         response = self.app.post(self.base_url, data=user2_data)
-        # Check not in login page /todo should check if the banner is there waiting for the merge/pr
         self.assertNotIn('/login/', response.headers.get('Location', ''),
                          "Duplicate email should not be allowed.")
 

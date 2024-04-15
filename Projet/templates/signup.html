@@ -3,28 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Signup</title>
-    <link rel="stylesheet" href="../static/signup.css">
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </head>
 <body>
 <div class="container">
     <a href="{{ url_for('index') }}" class="button">Back to Home</a>
-        <h1>Sign Up</h1>
-        {% with messages = get_flashed_messages(with_categories=true) %}
+    <h1>Sign Up</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
                 <div class="flash-{{ category }}">{{ message }}</div>
             {% endfor %}
         {% endif %}
-        {% endwith %}
-        <form action="/addSignup" method="post">
-              <input name="username" type="text" placeholder="username" required>
-              <input name="name" type="text" placeholder="name" required>
-              <input name="email" type="email" placeholder="email" required>
-              <input name="password" type="password" placeholder="password" required>
-              <input name="address" type="text" placeholder="Address" required>
-              <input type="submit" class="btn" value="SignUp" required>
-        </form>
+    {% endwith %}
+    <form id="signupForm" action="/addSignup/" method="post">
+          <input id="username" name="username" type="text" placeholder="username" pattern="[A-Za-z0-9]{5,40}" title="Username must be 5-40 characters long and alphanumeric." required>
+          <input name="name" type="text" placeholder="name" required>
+          <input name="email" type="email" placeholder="email" required>
+          <input name="password" type="password" placeholder="password" minlength="8" maxlength="40" required>
+          <input name="address" type="text" placeholder="Address" required minlength="6" maxlength="254">
+          <input type="submit" class="btn" value="SignUp">
+    </form>
 </div>
+<script>
+// JavaScript validation functions here
+</script>
 </body>
 </html>

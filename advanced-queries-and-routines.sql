@@ -1,3 +1,5 @@
+drop trigger UpdateProductRatingAfterInsert;
+
 /* Requête pour récupérer les produits les plus populaires (basé sur le nombre total de ventes) */
 SELECT p.ProductID, p.Name, p.Description, p.Price, p.Stock,
        SUM(oi.Quantite) AS TotalSales
@@ -140,3 +142,20 @@ DELIMITER ;
 
 /* Trigger to send completion notification when order status changes to 'Completed' */
 /* Note: SendCompletionNotification is a hypothetical function that would send a notification to the user */
+-- Insert multiple reviews
+DELIMITER //
+
+CREATE TRIGGER UpdateStockOnOrder
+AFTER INSERT ON OrderItems
+FOR EACH ROW
+BEGIN
+    UPDATE Products
+    SET Stock = Stock - NEW.Quantity
+    WHERE ProductID = NEW.ProductID;
+    IF (SELECT Stock FROM Products WHERE ProductID = NEW.ProductID) < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: Stock cannot go below zero.';
+    END IF;
+END;
+
+DELIMITER ;

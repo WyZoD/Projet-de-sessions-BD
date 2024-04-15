@@ -27,6 +27,7 @@ def validate_input(input_str, min_length=None, max_length=None):
         return False
     return True
 
+
 @app.route("/")
 def index():
     if 'username' in session:
@@ -80,8 +81,6 @@ def add_signup():
     else:
         flash("User not added, this username or email address is already in use")
         return redirect(url_for('signup'))
-
-
 
 
 @app.route("/product/<int:product_id>/")

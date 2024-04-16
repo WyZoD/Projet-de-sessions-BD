@@ -1,0 +1,110 @@
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+.button-group {
+    margin-bottom: 20px;
+}
+
+.button {
+    display: inline-block;
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.product {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    width: calc(33.333% - 20px);
+    padding: 20px;
+}
+
+.product h2 {
+    margin-top: 0;
+    color: #007bff;
+}
+
+.product p {
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .products {
+        flex-direction: column;
+    }
+
+    .product {
+        width: 100%;
+    }
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.button:hover {
+    background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 75%);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.button:active {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
+}
+
+.flash-message {
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    text-align: center;
+}

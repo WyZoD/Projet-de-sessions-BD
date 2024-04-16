@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1, h2, h3 {
+    color: #333;
+}
+
+p {
+    color: #555;
+    line-height: 1.6;
+}
+
+
+.product-details p {
+    margin-bottom: 1rem;
+}
+
+
+.button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px 0;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+
+form {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+form label {
+    font-weight: bold;
+}
+
+form select, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+form textarea {
+    resize: vertical;
+}
+
+
+.login-prompt {
+    margin-top: 20px;
+}
+
+.login-prompt a {
+    color: #007bff;
+}
+
+.review {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 5px;
+    border-left: 4px solid #007bff;
+}
+
+.review p {
+    margin: 10px 0;
+}
+
+.review p:last-child {
+    color: #999;
+    font-size: 0.9rem;
+}

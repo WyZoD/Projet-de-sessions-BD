@@ -6,9 +6,11 @@ import pymysql.cursors
 
 from werkzeug.security import generate_password_hash
 
+# Load environment variables
 load_dotenv()
 
 
+# Establish database connection
 def get_db_connection():
     return pymysql.connect(
         host=os.environ.get("host"),
@@ -19,6 +21,8 @@ def get_db_connection():
         autocommit=True
     )
 
+
+# Add new user to the database
 def add_user(username, password, email, name, address):
     with get_db_connection() as connection:
         with connection.cursor() as cursor:
@@ -34,6 +38,7 @@ def add_user(username, password, email, name, address):
                 return False
 
 
+# Retrieve user details by email
 def get_user_by_email(email):
     try:
         with get_db_connection() as connection:
@@ -45,6 +50,7 @@ def get_user_by_email(email):
         return None
 
 
+# Get all products from the database
 def get_all_products():
     try:
         with get_db_connection() as connection:
@@ -56,6 +62,7 @@ def get_all_products():
         return []
 
 
+# Get a single product by ID
 def get_product_by_id(product_id, conn=None):
     own_connection = False
 
@@ -79,6 +86,7 @@ def get_product_by_id(product_id, conn=None):
         return None
 
 
+# Get reviews by product ID
 def get_reviews_by_product_id(product_id):
     connection = get_db_connection()
     with connection.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -92,6 +100,7 @@ def get_reviews_by_product_id(product_id):
     return reviews
 
 
+# Add a review to a product
 def add_product_review(product_id, username, note, commentaire):
     conn = get_db_connection()
     try:
@@ -110,7 +119,7 @@ def add_product_review(product_id, username, note, commentaire):
         conn.close()
 
 
-#CART -------------------------------------------------
+# add an item to the cart
 def add_item_to_cart(username, product_id, quantity):
     try:
         connection = get_db_connection()
@@ -119,7 +128,7 @@ def add_item_to_cart(username, product_id, quantity):
                 INSERT INTO CartItems (Username, ProductID, Quantity) 
                 VALUES (%s, %s, %s)
                 ON DUPLICATE KEY UPDATE Quantity = Quantity + %s""",
-                (username, product_id, quantity, quantity))
+                           (username, product_id, quantity, quantity))
         connection.commit()
         return True
     except Exception as e:
@@ -127,6 +136,7 @@ def add_item_to_cart(username, product_id, quantity):
         return False
 
 
+# get the items in the cart
 def get_cart_items(username):
     items = []
     try:
@@ -137,13 +147,14 @@ def get_cart_items(username):
                 FROM CartItems c
                 JOIN Products p ON c.ProductID = p.ProductID
                 WHERE c.Username = %s""",
-                (username,))
+                           (username,))
             items = cursor.fetchall()
     except Exception as e:
         print(e)
     return items
 
 
+# update the quantity of an item in the cart
 def update_cart_item_quantity(username, product_id, new_quantity):
     conn = get_db_connection()
     try:
@@ -161,6 +172,7 @@ def update_cart_item_quantity(username, product_id, new_quantity):
         conn.close()
 
 
+# remove an item from the cart
 def remove_item_from_cart(username, product_id):
     conn = get_db_connection()
     try:
@@ -174,6 +186,7 @@ def remove_item_from_cart(username, product_id):
         conn.close()
 
 
+# create an order
 def create_order(username, delivery_address, total, conn=None):
     own_connection = False
     if conn is None:
@@ -199,6 +212,7 @@ def create_order(username, delivery_address, total, conn=None):
             conn.close()
 
 
+# add an item to an order
 def add_order_item(order_id, product_id, quantity, price, conn=None):
     own_connection = False
     if conn is None:
@@ -222,6 +236,7 @@ def add_order_item(order_id, product_id, quantity, price, conn=None):
             conn.close()
 
 
+# update the quantity of a product
 def update_product_quantity(product_id, quantity_change, conn=None):
     own_connection = False
     if conn is None:
@@ -230,7 +245,6 @@ def update_product_quantity(product_id, quantity_change, conn=None):
 
     try:
         with conn.cursor() as cursor:
-            # Check current stock
             cursor.execute("SELECT Stock FROM Products WHERE ProductID = %s", (product_id,))
             result = cursor.fetchone()
             if result is None:
@@ -239,12 +253,10 @@ def update_product_quantity(product_id, quantity_change, conn=None):
             current_stock = result[0]
             new_stock = current_stock + quantity_change
 
-            # Ensure the new stock level is not negative
             if new_stock < 0:
                 raise ValueError(
                     f"Insufficient stock for product ID {product_id}. Current stock: {current_stock}, attempted change: {quantity_change}")
 
-            # Update the stock in the database
             cursor.execute("""
                 UPDATE Products 
                 SET Stock = %s 
@@ -257,7 +269,6 @@ def update_product_quantity(product_id, quantity_change, conn=None):
     except (pymysql.MySQLError, ValueError) as e:
         if own_connection:
             conn.rollback()
-        # Consider using logging instead of print for production code
         print(f"An error occurred while updating product quantity: {e}")
         return False
     finally:
@@ -265,6 +276,7 @@ def update_product_quantity(product_id, quantity_change, conn=None):
             conn.close()
 
 
+# clear the cart
 def clear_cart(username, conn=None):
     own_connection = False
     if conn is None:
@@ -285,8 +297,7 @@ def clear_cart(username, conn=None):
             conn.close()
 
 
-
-# order list -------------------------------------------------
+# get all orders for a user
 def get_orders(username):
     try:
         with get_db_connection() as connection:
@@ -298,6 +309,7 @@ def get_orders(username):
         return []
 
 
+# get all items in an order
 def get_order_items(order_id):
     try:
         with get_db_connection() as connection:
@@ -316,6 +328,7 @@ def get_order_items(order_id):
         return []
 
 
+# get the total sales by category
 def get_total_sales_by_category():
     query = """
     SELECT c.Name AS CategoryName, SUM(o.Quantity * o.UnitPrice) AS TotalSales
@@ -331,6 +344,7 @@ def get_total_sales_by_category():
             return cursor.fetchall()
 
 
+# get the total sales by product
 def get_never_ordered_products():
     query = """
     SELECT *
@@ -343,6 +357,7 @@ def get_never_ordered_products():
             return cursor.fetchall()
 
 
+# get the most popular product
 def get_most_popular_product():
     query = """
     SELECT p.Name, SUM(oi.Quantity) AS TotalQuantity
@@ -359,6 +374,7 @@ def get_most_popular_product():
     return result
 
 
+# get the highest spending customer
 def get_highest_spending_customer():
     query = """
     SELECT u.Name, SUM(oi.Quantity * oi.UnitPrice) AS TotalSpent
@@ -376,6 +392,7 @@ def get_highest_spending_customer():
     return result
 
 
+# get the average rating per category
 def get_average_rating_per_category():
     query = """
     SELECT cat.Name AS CategoryName, AVG(pr.Note) AS AverageRating
@@ -392,6 +409,7 @@ def get_average_rating_per_category():
     return results
 
 
+# get the percentage of products that have never been sold
 def get_percentage_never_sold():
     query = """
     SELECT ROUND((COUNT(DISTINCT p.ProductID) / (SELECT COUNT(*) FROM Products) * 100), 2) AS PercentageNeverSold
@@ -404,5 +422,3 @@ def get_percentage_never_sold():
             cursor.execute(query)
             result = cursor.fetchone()
     return result
-
-

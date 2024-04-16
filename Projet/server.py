@@ -15,6 +15,7 @@ def validate_email(email):
     return re.match(pattern, email) is not None
 
 
+# base route
 @app.route("/")
 def index():
     if 'username' in session:
@@ -27,17 +28,20 @@ def index():
     return render_template('index.html', logged_in=logged_in, username=username, products=products)
 
 
+# this route is used to get the user's username
 @app.before_request
 def before_request():
     g.logged_in = 'username' in session
     g.username = session.get('username')
 
 
+# Signup page
 @app.route("/signup/")
 def signup():
     return render_template("signup.html")
 
 
+# this route is used to add a new user to the database
 @app.route("/addSignup/", methods=["POST"])
 def add_signup():
     username = request.form.get("username", type=str)
@@ -54,6 +58,7 @@ def add_signup():
         return redirect(url_for('signup'))
 
 
+# route to the product according to id
 @app.route("/product/<int:product_id>/")
 def product_page(product_id):
     product = get_product_by_id(product_id)
@@ -63,6 +68,7 @@ def product_page(product_id):
                            username=session.get('username'))
 
 
+# this route is used to add a review to a product
 @app.route("/add-review/<int:product_id>/", methods=["POST"])
 def add_review(product_id):
     if 'username' not in session:
@@ -81,6 +87,7 @@ def add_review(product_id):
     return redirect(url_for('product_page', product_id=product_id))
 
 
+# this route is used to log the user in
 @app.route("/login/", methods=["GET", "POST"])
 def login():
     error = None
@@ -99,6 +106,7 @@ def login():
     return render_template("login.html", error=error)
 
 
+# this route is used to add a product to the cart
 @app.route("/add-to-cart/", methods=["POST"])
 def add_to_cart():
     if 'username' not in session:
@@ -116,6 +124,7 @@ def add_to_cart():
     return redirect(url_for('index'))
 
 
+# this route is used to show the cart
 @app.route("/cart/")
 def show_cart():
     if 'username' not in session:
@@ -127,6 +136,7 @@ def show_cart():
     return render_template('cart.html', cart_items=cart_items, logged_in=logged_in, username=username)
 
 
+# this route is used to log the user out
 @app.route("/logout/")
 def logout():
     session.pop('username', None)
@@ -134,6 +144,7 @@ def logout():
     return redirect(url_for('index'))
 
 
+# this route is used to update the quantity of a product in the cart
 @app.route("/update-quantity/<int:product_id>/", methods=["POST"])
 def update_quantity(product_id):
     if 'username' not in session:
@@ -151,6 +162,7 @@ def update_quantity(product_id):
     return redirect(url_for('show_cart'))
 
 
+# this route is used to remove a product from the cart
 @app.route("/remove-from-cart/<int:product_id>/", methods=["POST"])
 def remove_from_cart(product_id):
     if 'username' not in session:
@@ -164,6 +176,7 @@ def remove_from_cart(product_id):
     return redirect(url_for('show_cart'))
 
 
+# this route is used to place an order
 @app.route("/place-order/", methods=["POST"])
 def place_order():
     if 'username' not in session:
@@ -204,6 +217,7 @@ def place_order():
     return redirect(url_for('show_orders'))
 
 
+# this route is used to show the user's orders
 @app.route("/orders/")
 def show_orders():
     if 'username' not in session:
@@ -220,6 +234,7 @@ def show_orders():
     return render_template('orders.html', orders=orders, logged_in=logged_in, username=username)
 
 
+# this route is used to show the fun facts
 @app.route("/fun-fact/")
 def fun_fact():
     if 'username' not in session:
@@ -268,7 +283,6 @@ def fun_fact():
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
     if not app.config['TESTING']:
-        # Prevent using this route in non-testing environments
         abort(404)
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
